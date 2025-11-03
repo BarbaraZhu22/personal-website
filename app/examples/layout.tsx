@@ -14,14 +14,8 @@ export default function ExamplesLayout({
             ← Back to Home
           </Link>
           <div className={styles.links}>
-            <Link href="/examples/ssg-example" className={`hover:underline ${styles.link}`}>
-              SSG Example
-            </Link>
             <Link href="/examples/isr-example" className={`hover:underline ${styles.link}`}>
               ISR Example
-            </Link>
-            <Link href="/examples/ssr-example" className={`hover:underline ${styles.link}`}>
-              SSR Example
             </Link>
           </div>
         </div>

@@ -50,12 +50,10 @@ export default function Home() {
 
           <Card title="Rendering Examples">
             <p className={`text-text-muted ${styles.paragraph}`}>
-              This project uses SSG + ISR by default. Check out these examples:
+              This project uses SSG + ISR by default. Check out the example:
             </p>
             <div className={styles.buttonGroup}>
-              <a href="/examples/ssg-example" className={`btn ${styles.buttonLink}`}>SSG Example</a>
               <a href="/examples/isr-example" className={`btn ${styles.buttonLink}`}>ISR Example</a>
-              <a href="/examples/ssr-example" className={`btn ${styles.buttonLink}`}>SSR Example</a>
             </div>
           </Card>
         </div>
