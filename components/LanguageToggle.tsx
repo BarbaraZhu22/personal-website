@@ -2,6 +2,7 @@
 
 import { useLanguageStore, Language } from '@/store'
 import { t } from '@/lib/i18n'
+import styles from './LanguageToggle.module.css'
 
 const languageNames: Record<Language, string> = {
   en: 'English',
@@ -14,12 +15,12 @@ export default function LanguageToggle() {
   const { language, setLanguage } = useLanguageStore()
 
   return (
-    <div className="flex items-center gap-2">
-      <label className="text-sm font-medium">{t('language', language)}:</label>
+    <div className={styles.wrapper}>
+      <label className={styles.label}>{t('language', language)}:</label>
       <select
         value={language}
         onChange={(e) => setLanguage(e.target.value as Language)}
-        className="input w-auto"
+        className={`input ${styles.select}`}
       >
         {Object.entries(languageNames).map(([code, name]) => (
           <option key={code} value={code}>

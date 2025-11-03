@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import styles from './Card.module.css'
 
 interface CardProps {
   children: ReactNode
@@ -9,7 +10,7 @@ interface CardProps {
 export default function Card({ children, className = '', title }: CardProps) {
   return (
     <div className={`card ${className}`}>
-      {title && <h3 className="text-xl font-semibold mb-4">{title}</h3>}
+      {title && <h3 className={styles.title}>{title}</h3>}
       {children}
     </div>
   )

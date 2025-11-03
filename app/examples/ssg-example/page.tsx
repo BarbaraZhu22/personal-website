@@ -1,6 +1,8 @@
 // This page is SSG by default (Static Site Generation)
 // Generated at build time, served as static HTML
 
+import styles from '../page.module.css'
+
 export const metadata = {
   title: 'SSG Example',
   description: 'This page is statically generated at build time',
@@ -15,16 +17,16 @@ export default function SSGExample() {
   const buildTime = new Date().toISOString()
 
   return (
-    <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-4">SSG Example Page</h1>
+    <div className={`container ${styles.container}`}>
+      <h1 className={styles.title}>SSG Example Page</h1>
       <div className="card">
-        <p className="mb-2">
+        <p className={styles.paragraph}>
           <strong>Rendering Strategy:</strong> Static Site Generation (SSG)
         </p>
-        <p className="mb-2">
+        <p className={styles.paragraph}>
           <strong>Generated at:</strong> {buildTime}
         </p>
-        <p className="text-text-muted">
+        <p className={`text-text-muted ${styles.paragraph}`}>
           This page was pre-rendered at build time and served as static HTML.
           It&apos;s fast, SEO-friendly, and works perfectly with client-side state.
         </p>

@@ -1,0 +1,45 @@
+.main {
+  padding-top: clamp(1rem, 3vw + 0.5rem, 2rem);
+  padding-bottom: clamp(1rem, 3vw + 0.5rem, 2rem);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw + 0.5rem, 1.5rem);
+}
+
+.paragraph {
+  margin-bottom: 1rem;
+  font-size: clamp(0.875rem, 1.5vw + 0.5rem, 1rem);
+}
+
+.paragraphSmall {
+  margin-top: 1rem;
+  font-size: clamp(0.75rem, 1.2vw + 0.4rem, 0.875rem);
+}
+
+.buttonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.button {
+  flex: 1 1 auto;
+  min-width: clamp(8rem, 20vw, 10rem);
+}
+
+.buttonLink {
+  flex: 1 1 auto;
+  min-width: clamp(8rem, 20vw, 10rem);
+  text-align: center;
+}
+
+.list {
+  font-size: clamp(0.875rem, 1.5vw + 0.5rem, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+

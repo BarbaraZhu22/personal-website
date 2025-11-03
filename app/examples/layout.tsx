@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import styles from './layout.module.css'
 
 export default function ExamplesLayout({
   children,
@@ -7,19 +8,19 @@ export default function ExamplesLayout({
 }) {
   return (
     <div className="min-h-screen">
-      <nav className="border-b border-border bg-muted/50">
-        <div className="container py-4">
-          <Link href="/" className="text-primary hover:underline mr-4">
+      <nav className={styles.nav}>
+        <div className={`container ${styles.container}`}>
+          <Link href="/" className={`text-primary hover:underline ${styles.backLink}`}>
             ← Back to Home
           </Link>
-          <div className="mt-2 flex gap-4">
-            <Link href="/examples/ssg-example" className="text-sm hover:underline">
+          <div className={styles.links}>
+            <Link href="/examples/ssg-example" className={`hover:underline ${styles.link}`}>
               SSG Example
             </Link>
-            <Link href="/examples/isr-example" className="text-sm hover:underline">
+            <Link href="/examples/isr-example" className={`hover:underline ${styles.link}`}>
               ISR Example
             </Link>
-            <Link href="/examples/ssr-example" className="text-sm hover:underline">
+            <Link href="/examples/ssr-example" className={`hover:underline ${styles.link}`}>
               SSR Example
             </Link>
           </div>
