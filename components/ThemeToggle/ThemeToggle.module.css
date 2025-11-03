@@ -30,7 +30,8 @@
   font-weight: 500;
   font-size: clamp(0.75rem, 1.2vw + 0.4rem, 0.875rem);
   cursor: pointer;
-  transition: all 0.2s ease;
+  /* Using common transitions */
+  composes: transition-all from global;
 }
 
 .modeButton:hover {
@@ -57,8 +58,9 @@
   border-radius: 50%;
   border: 2px solid transparent;
   cursor: pointer;
-  transition: all 0.2s ease;
   position: relative;
+  /* Using common transitions */
+  composes: transition-transform from global;
 }
 
 .colorButton:hover {
