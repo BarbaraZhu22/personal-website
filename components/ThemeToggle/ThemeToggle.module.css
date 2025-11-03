@@ -1,0 +1,74 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-weight: 500;
+  font-size: clamp(0.75rem, 1.2vw + 0.4rem, 0.875rem);
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.modeButton {
+  padding: clamp(0.375rem, 1vw + 0.125rem, 0.5rem) clamp(0.75rem, 2vw + 0.5rem, 1rem);
+  border-radius: 0.375rem;
+  border: 2px solid var(--color-border);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-weight: 500;
+  font-size: clamp(0.75rem, 1.2vw + 0.4rem, 0.875rem);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modeButton:hover {
+  background-color: var(--color-muted);
+  border-color: var(--color-primary);
+}
+
+.modeButton.active {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.colorPicker {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.colorButton {
+  width: clamp(2.5rem, 6vw, 3rem);
+  height: clamp(2.5rem, 6vw, 3rem);
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.colorButton:hover {
+  transform: scale(1.1);
+  border-color: var(--color-border);
+}
+
+.colorButton.colorActive {
+  transform: scale(1.15);
+  border-color: var(--color-foreground);
+  box-shadow: 0 0 0 2px var(--color-primary), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+

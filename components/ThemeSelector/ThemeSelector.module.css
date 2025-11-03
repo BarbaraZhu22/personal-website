@@ -61,7 +61,8 @@
 }
 
 .themeButtonInactive:hover {
-  border-color: rgba(var(--color-primary), 0.5);
+  border-color: var(--color-primary);
+  opacity: 0.5;
   background-color: var(--color-muted);
   transform: scale(1.02);
 }

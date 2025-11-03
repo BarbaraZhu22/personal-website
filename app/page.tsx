@@ -1,6 +1,7 @@
 'use client'
 
-import { Header, Card, Button, ColorPreview } from '@/components'
+import { Header } from '@/layouts'
+import { Card, Button, ColorPreview } from '@/components'
 import { useTranslation } from '@/hooks'
 import styles from './page.module.css'
 

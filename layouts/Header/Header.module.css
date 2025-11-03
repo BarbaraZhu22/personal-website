@@ -1,0 +1,18 @@
+.header {
+  border-bottom: 1px solid var(--color-border);
+  padding-top: clamp(1rem, 2vw + 0.5rem, 1.5rem);
+  padding-bottom: clamp(1rem, 2vw + 0.5rem, 1.5rem);
+  margin-top: clamp(2rem, 5vw + 1rem, 3rem);
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-weight: bold;
+  font-size: clamp(1.25rem, 3vw + 0.5rem, 2rem);
+}
+
