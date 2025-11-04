@@ -24,10 +24,12 @@ export default async function Home() {
             Specialized in modern frontend technologies and best practices.
           </p>
           <div className={styles.skillsGrid}>
-            <div className={`${styles.skillTag} hover-scale transition-transform`}>React</div>
             <div className={`${styles.skillTag} hover-scale transition-transform`}>Next.js</div>
+            <div className={`${styles.skillTag} hover-scale transition-transform`}>Vue</div>
             <div className={`${styles.skillTag} hover-scale transition-transform`}>TypeScript</div>
-            <div className={`${styles.skillTag} hover-scale transition-transform`}>Tailwind CSS</div>
+            <div className={`${styles.skillTag} hover-scale transition-transform`}>Three.js</div>
+            <div className={`${styles.skillTag} hover-scale transition-transform`}>GLSL</div>
+            <div className={`${styles.skillTag} hover-scale transition-transform`}>Agent-Based Interaction Design</div>
           </div>
         </Card>
 

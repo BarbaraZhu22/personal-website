@@ -26,14 +26,6 @@ export default function Footer() {
               GitHub
             </a>
             <a 
-              href="https://linkedin.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className={`${styles.link} hover-color transition-colors`}
-            >
-              LinkedIn
-            </a>
-            <a 
               href="/contact"
               className={`${styles.link} hover-color transition-colors`}
             >

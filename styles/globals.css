@@ -54,7 +54,7 @@ body {
 /* Main content area with padding for fixed header and footer */
 .main-content {
   min-height: 100vh;
-  padding-top: clamp(10rem, 18vw + 5rem, 14rem); /* Space for TopBar + Navigation + Header */
+  padding-top: clamp(5rem, 18vw + 2rem, 9rem); /* Space for TopBar + Navigation + Header */
   padding-bottom: clamp(5rem, 8vw + 3rem, 8rem); /* Space for Footer */
   transition: padding-top 0.3s ease, padding-bottom 0.3s ease;
 }
