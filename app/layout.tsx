@@ -1,22 +1,25 @@
-import type { Metadata } from 'next'
-import '../styles/globals.css'
-import ThemeProvider from '@/components/ThemeProvider'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Next.js Template',
-  description: 'A Next.js template with TypeScript, Zustand, and theme support',
-}
+import { useEffect } from 'react'
+import '../styles/globals.css'
+import { useThemeStore } from '@/store'
+import { applyTheme } from '@/lib/theme'
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const { mode, colorScheme } = useThemeStore()
+
+  useEffect(() => {
+    // Apply theme on mount and when theme changes
+    applyTheme(mode, colorScheme)
+  }, [mode, colorScheme])
+
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
-      </body>
+      <body>{children}</body>
     </html>
   )
 }

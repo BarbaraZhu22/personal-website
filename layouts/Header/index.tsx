@@ -1,6 +1,6 @@
 'use client'
 
-import TopBar from '../TopBar'
+import TopBar from './TopBar'
 import styles from './Header.module.css'
 
 export default function Header() {
