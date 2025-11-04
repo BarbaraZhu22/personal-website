@@ -1,22 +1,22 @@
-'use client'
-
 import { Header } from '@/layouts'
 import { Card, Button } from '@/components'
-import { useTranslation } from '@/hooks'
+import { getHomeContent } from '@/content/home'
 import styles from './page.module.css'
 
-export default function Home() {
-  const { t } = useTranslation()
+// ISR: Revalidate every 300 seconds
+export const revalidate = 300
+
+export default async function Home() {
+  const content = await getHomeContent()
 
   return (
     <div className="min-h-screen">
       <Header />
       <main className={`container ${styles.main}`}>
         <div className={styles.content}>
-          <Card title={t('welcome')}>
+          <Card title={content.welcome.title}>
             <p className={`text-text-muted ${styles.paragraph}`}>
-              This is a Next.js template with TypeScript, Zustand state management,
-              theme switching, and internationalization support.
+              {content.welcome.description}
             </p>
             <div className={styles.buttonGroup}>
               <Button variant="primary" className={styles.button}>Primary Button</Button>
@@ -32,25 +32,10 @@ export default function Home() {
 
           <Card title="Features">
             <ul className={`list-disc list-inside text-text-muted ${styles.list}`}>
-              <li>Next.js 14 with App Router</li>
-              <li>TypeScript support</li>
-              <li>Zustand for state management</li>
-              <li>Multiple color themes (Blue, Green, Purple, Orange, Pink, Indigo)</li>
-              <li>Theme switching (Light/Dark)</li>
-              <li>Multi-language support (i18n)</li>
-              <li>Tailwind CSS for styling</li>
-              <li>SSG + ISR rendering strategy</li>
-              <li>Vercel deployment ready</li>
+              {content.features.map((feature, index) => (
+                <li key={index}>{feature}</li>
+              ))}
             </ul>
-          </Card>
-
-          <Card title="Rendering Examples">
-            <p className={`text-text-muted ${styles.paragraph}`}>
-              This project uses SSG + ISR by default. Check out the example:
-            </p>
-            <div className={styles.buttonGroup}>
-              <a href="/examples/isr-example" className={`btn ${styles.buttonLink}`}>ISR Example</a>
-            </div>
           </Card>
         </div>
       </main>

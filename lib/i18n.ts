@@ -37,18 +37,6 @@ const translations: Translations = {
     es: 'Oscuro',
     fr: 'Sombre',
   },
-  system: {
-    en: 'System',
-    zh: '系统',
-    es: 'Sistema',
-    fr: 'Système',
-  },
-  mode: {
-    en: 'Mode',
-    zh: '模式',
-    es: 'Modo',
-    fr: 'Mode',
-  },
   color: {
     en: 'Color',
     zh: '颜色',
@@ -59,6 +47,13 @@ const translations: Translations = {
 
 export const t = (key: string, language: Language): string => {
   return translations[key]?.[language] || key
+}
+
+// Server-side translation function
+export const getTranslations = (language: string) => {
+  return (key: string): string => {
+    return translations[key]?.[language as Language] || key
+  }
 }
 
 export { translations }
