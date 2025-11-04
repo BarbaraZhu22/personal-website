@@ -48,6 +48,93 @@ export const colorSchemes: Record<ColorScheme, { name: string; light: string; da
   },
 }
 
+// Gradient definitions for each color scheme
+export const themeGradients: Record<ColorScheme, {
+  light: {
+    gradientStart: string
+    gradientEnd: string
+    gradientMid?: string
+  }
+  dark: {
+    gradientStart: string
+    gradientEnd: string
+    gradientMid?: string
+  }
+}> = {
+  blue: {
+    light: {
+      gradientStart: '#e6f2ff',
+      gradientEnd: '#ffffff',
+      gradientMid: '#cce6ff',
+    },
+    dark: {
+      gradientStart: '#001122',
+      gradientEnd: '#000000',
+      gradientMid: '#002244',
+    },
+  },
+  green: {
+    light: {
+      gradientStart: '#e8f5e9',
+      gradientEnd: '#ffffff',
+      gradientMid: '#c8e6c9',
+    },
+    dark: {
+      gradientStart: '#0a1a0a',
+      gradientEnd: '#000000',
+      gradientMid: '#1a3a1a',
+    },
+  },
+  purple: {
+    light: {
+      gradientStart: '#f3e8ff',
+      gradientEnd: '#ffffff',
+      gradientMid: '#e9d5ff',
+    },
+    dark: {
+      gradientStart: '#1a0a2e',
+      gradientEnd: '#000000',
+      gradientMid: '#2d1b4e',
+    },
+  },
+  orange: {
+    light: {
+      gradientStart: '#fff3e0',
+      gradientEnd: '#ffffff',
+      gradientMid: '#ffe0b2',
+    },
+    dark: {
+      gradientStart: '#2e1400',
+      gradientEnd: '#000000',
+      gradientMid: '#4a2100',
+    },
+  },
+  pink: {
+    light: {
+      gradientStart: '#fce4ec',
+      gradientEnd: '#ffffff',
+      gradientMid: '#f8bbd0',
+    },
+    dark: {
+      gradientStart: '#2a0a1e',
+      gradientEnd: '#000000',
+      gradientMid: '#4a1a3e',
+    },
+  },
+  indigo: {
+    light: {
+      gradientStart: '#eef2ff',
+      gradientEnd: '#ffffff',
+      gradientMid: '#e0e7ff',
+    },
+    dark: {
+      gradientStart: '#0f0a1f',
+      gradientEnd: '#000000',
+      gradientMid: '#1f1a3f',
+    },
+  },
+}
+
 // Color palette for each scheme
 export const themeColors: Record<ColorScheme, {
   light: {
@@ -176,11 +263,25 @@ export const applyTheme = (mode: ThemeMode, colorScheme: ColorScheme) => {
   
   // Apply CSS variables for color scheme
   const colors = themeColors[colorScheme][mode]
+  const gradients = themeGradients[colorScheme][mode]
   
   // Set all theme color CSS variables for reactive updates
   root.style.setProperty('--color-primary', colors.primary)
   root.style.setProperty('--color-secondary', colors.secondary)
   root.style.setProperty('--color-accent', colors.accent)
+  
+  // Set gradient CSS variables
+  root.style.setProperty('--gradient-start', gradients.gradientStart)
+  root.style.setProperty('--gradient-end', gradients.gradientEnd)
+  if (gradients.gradientMid) {
+    root.style.setProperty('--gradient-mid', gradients.gradientMid)
+  }
+  
+  // Create gradient string for background
+  const gradientString = gradients.gradientMid
+    ? `linear-gradient(135deg, ${gradients.gradientStart} 0%, ${gradients.gradientMid} 50%, ${gradients.gradientEnd} 100%)`
+    : `linear-gradient(135deg, ${gradients.gradientStart} 0%, ${gradients.gradientEnd} 100%)`
+  root.style.setProperty('--gradient-background', gradientString)
   
   // Also set data attributes for easier CSS targeting if needed
   root.setAttribute('data-theme-mode', mode)

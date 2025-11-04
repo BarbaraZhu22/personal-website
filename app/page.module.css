@@ -37,12 +37,12 @@
 
 .skillTag {
   padding: 0.75rem 1rem;
-  background-color: var(--color-muted);
+  background-color: color-mix(in srgb, var(--color-primary) 10%, var(--color-muted));
   border-radius: 0.5rem;
   text-align: center;
   font-weight: 500;
   color: var(--color-foreground);
-  border: 1px solid var(--color-border);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
   transition: all 0.3s ease;
 }
 
@@ -50,6 +50,8 @@
   background-color: var(--color-primary);
   color: white;
   border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
 
 .links {
@@ -69,4 +71,5 @@
 
 .link:hover {
   padding-left: 0.5rem;
+  color: var(--color-primary);
 }
