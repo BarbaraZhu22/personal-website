@@ -85,12 +85,8 @@ export class ThreePlayer {
     this.renderer.setSize(canvas.clientWidth, canvas.clientHeight)
     this.renderer.setPixelRatio(window.devicePixelRatio)
     // Use modern outputColorSpace API (Three.js r152+)
-    // Fallback to deprecated outputEncoding for older versions
     if ('outputColorSpace' in this.renderer) {
       this.renderer.outputColorSpace = 'srgb'
-    } else {
-      // @ts-ignore - deprecated API
-      this.renderer.outputEncoding = THREE.sRGBEncoding
     }
     this.renderer.localClippingEnabled = true
 
