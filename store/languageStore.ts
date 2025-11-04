@@ -10,9 +10,9 @@ interface LanguageState {
 
 export const useLanguageStore = create<LanguageState>()(
   persist(
-    (set) => ({
+    (set: (partial: Partial<LanguageState>) => void) => ({
       language: 'zh',
-      setLanguage: (language) => set({ language }),
+      setLanguage: (language: Language) => set({ language }),
     }),
     {
       name: 'language-storage',

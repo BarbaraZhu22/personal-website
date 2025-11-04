@@ -20,19 +20,19 @@ interface ThemeState {
  */
 export const useThemeStore = create<ThemeState>()(
   persist(
-    (set, get) => ({
+    (set: (partial: Partial<ThemeState>) => void, get: () => ThemeState) => ({
       mode: 'light',
       colorScheme: 'blue',
       theme: 'light-blue',
-      setMode: (mode) => {
+      setMode: (mode:ThemeMode) => {
         const { colorScheme } = get()
         set({ mode, theme: combineTheme(mode, colorScheme) })
       },
-      setColorScheme: (colorScheme) => {
+      setColorScheme: (colorScheme:ColorScheme) => {
         const { mode } = get()
         set({ colorScheme, theme: combineTheme(mode, colorScheme) })
       },
-      setTheme: (themeOrConfig) => {
+      setTheme: (themeOrConfig:CombinedTheme | ThemeConfig) => {
         let config: ThemeConfig
         if (typeof themeOrConfig === 'string') {
           config = parseCombinedTheme(themeOrConfig)

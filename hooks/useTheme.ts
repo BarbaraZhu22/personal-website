@@ -1,7 +1,7 @@
 'use client'
 
 import { useThemeStore } from '@/store/themeStore'
-import { themeColors } from '@/lib/theme'
+import { themeColors, ColorScheme, ThemeMode } from '@/lib/theme'
 
 /**
  * Central hook for components to reactively subscribe to theme changes
@@ -13,7 +13,7 @@ export function useTheme() {
   const { mode, colorScheme, theme, setMode, setColorScheme, setTheme } = useThemeStore()
   
   // Get current theme colors reactively
-  const colors = themeColors[colorScheme][mode]
+  const colors = themeColors[colorScheme as ColorScheme][mode as ThemeMode]
   
   return {
     mode,
@@ -38,8 +38,8 @@ export function useTheme() {
  */
 export function useThemeColors() {
   // Only subscribe to colorScheme and mode changes for better performance
-  const colorScheme = useThemeStore((state) => state.colorScheme)
-  const mode = useThemeStore((state) => state.mode)
-  return themeColors[colorScheme][mode]
+  const colorScheme = useThemeStore((state: { colorScheme: ColorScheme }) => state.colorScheme)
+  const mode = useThemeStore((state: { mode: ThemeMode }) => state.mode)
+  return themeColors[colorScheme as ColorScheme][mode as ThemeMode]
 }
 
