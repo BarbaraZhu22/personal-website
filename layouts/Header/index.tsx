@@ -9,7 +9,7 @@ export default function Header() {
       <TopBar />
       <header className={styles.header}>
         <div className={`container ${styles.container}`}>
-          <h1 className={styles.title}>Next.js Template</h1>
+          <h1 className={styles.title}>Frontend Developer</h1>
         </div>
       </header>
     </>

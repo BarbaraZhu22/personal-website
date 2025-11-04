@@ -51,6 +51,30 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Main content area with padding for fixed header and footer */
+.main-content {
+  min-height: 100vh;
+  padding-top: clamp(10rem, 18vw + 5rem, 14rem); /* Space for TopBar + Navigation + Header */
+  padding-bottom: clamp(5rem, 8vw + 3rem, 8rem); /* Space for Footer */
+  transition: padding-top 0.3s ease, padding-bottom 0.3s ease;
+}
+
+/* Page transition animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: fadeIn 0.5s ease-out;
+}
+
 /* Smooth transitions for theme color changes */
 /* Note: CSS custom properties don't support transitions directly */
 /* Instead, we transition the properties that use these variables */

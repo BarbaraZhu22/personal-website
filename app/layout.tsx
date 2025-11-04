@@ -4,6 +4,8 @@ import { useEffect } from 'react'
 import '../styles/globals.css'
 import { useThemeStore } from '@/store'
 import { applyTheme } from '@/lib/theme'
+import { Header } from '@/layouts'
+import Footer from '@/layouts/Footer'
 
 export default function RootLayout({
   children,
@@ -19,7 +21,13 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        <Header />
+        <main className="main-content">
+          {children}
+        </main>
+        <Footer />
+      </body>
     </html>
   )
 }

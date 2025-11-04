@@ -43,6 +43,42 @@ const translations: Translations = {
     es: 'Color',
     fr: 'Couleur',
   },
+  home: {
+    en: 'Home',
+    zh: '首页',
+    es: 'Inicio',
+    fr: 'Accueil',
+  },
+  about: {
+    en: 'About',
+    zh: '关于',
+    es: 'Acerca',
+    fr: 'À propos',
+  },
+  work: {
+    en: 'Work',
+    zh: '作品',
+    es: 'Trabajo',
+    fr: 'Travail',
+  },
+  contact: {
+    en: 'Contact',
+    zh: '联系',
+    es: 'Contacto',
+    fr: 'Contact',
+  },
+  yourName: {
+    en: 'Frontend Developer',
+    zh: '前端开发者',
+    es: 'Desarrollador Frontend',
+    fr: 'Développeur Frontend',
+  },
+  rightsReserved: {
+    en: 'All rights reserved.',
+    zh: '保留所有权利。',
+    es: 'Todos los derechos reservados.',
+    fr: 'Tous droits réservés.',
+  },
 }
 
 export const t = (key: string, language: Language): string => {
