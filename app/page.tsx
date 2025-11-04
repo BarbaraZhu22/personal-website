@@ -1,7 +1,7 @@
 'use client'
 
 import { Header } from '@/layouts'
-import { Card, Button, ColorPreview } from '@/components'
+import { Card, Button } from '@/components'
 import { useTranslation } from '@/hooks'
 import styles from './page.module.css'
 
@@ -26,11 +26,7 @@ export default function Home() {
 
           <Card title="Theme Colors">
             <p className={`text-text-muted ${styles.paragraph}`}>
-              Click on a color to change the theme color scheme:
-            </p>
-            <ColorPreview />
-            <p className={`text-text-muted ${styles.paragraphSmall}`}>
-              You can also use the theme controls in the header to change both mode (Light/Dark/System) and color scheme.
+              Use the theme controls in the header to change both mode (Light/Dark) and color scheme.
             </p>
           </Card>
 
@@ -40,7 +36,7 @@ export default function Home() {
               <li>TypeScript support</li>
               <li>Zustand for state management</li>
               <li>Multiple color themes (Blue, Green, Purple, Orange, Pink, Indigo)</li>
-              <li>Theme switching (Light/Dark/System)</li>
+              <li>Theme switching (Light/Dark)</li>
               <li>Multi-language support (i18n)</li>
               <li>Tailwind CSS for styling</li>
               <li>SSG + ISR rendering strategy</li>

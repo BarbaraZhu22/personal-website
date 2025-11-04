@@ -7,7 +7,7 @@ A modern Next.js template with TypeScript, Zustand state management, theme switc
 - ⚡️ Next.js 14 with App Router
 - 📘 TypeScript
 - 🗄️ Zustand for state management
-- 🎨 Theme switching (Light/Dark/System)
+- 🎨 Theme switching (Light/Dark)
 - 🌍 Multi-language support (i18n)
 - 💅 Tailwind CSS for styling
 - 🚀 Vercel deployment ready
@@ -44,7 +44,7 @@ npm run dev
 
 The project uses Zustand for state management with two main stores:
 
-- **Theme Store** (`store/themeStore.ts`): Manages theme state (light/dark/system)
+- **Theme Store** (`store/themeStore.ts`): Manages theme state (light/dark)
 - **Language Store** (`store/languageStore.ts`): Manages language preference
 
 ## Theme System
@@ -52,7 +52,6 @@ The project uses Zustand for state management with two main stores:
 The theme system supports:
 - Light mode
 - Dark mode
-- System preference (automatically follows OS settings)
 
 Theme preferences are persisted in localStorage.
 
@@ -75,10 +74,8 @@ This project uses **SSG + ISR** (Static Site Generation + Incremental Static Reg
 - 🔍 Better SEO
 - ✨ Works perfectly with client-side state (Zustand)
 
-See example pages at:
-- `/examples/ssg-example` - Pure SSG
+See example page at:
 - `/examples/isr-example` - SSG with ISR
-- `/examples/ssr-example` - SSR (when needed)
 
 For more details, see [docs/RENDERING_STRATEGY.md](docs/RENDERING_STRATEGY.md)
 

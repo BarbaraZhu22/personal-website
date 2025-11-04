@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { ThemeMode, ColorScheme, ThemeConfig, CombinedTheme, parseCombinedTheme, combineTheme } from '@/lib/themes'
+import { ThemeMode, ColorScheme, ThemeConfig, CombinedTheme, parseCombinedTheme, combineTheme } from '@/lib/theme'
 
 export type Theme = ThemeMode
 
@@ -11,16 +11,19 @@ interface ThemeState {
   setMode: (mode: ThemeMode) => void
   setColorScheme: (colorScheme: ColorScheme) => void
   setTheme: (theme: CombinedTheme | ThemeConfig) => void
-  getEffectiveMode: () => 'light' | 'dark'
   getTheme: () => ThemeConfig
 }
 
+/**
+ * Internal theme store - use useTheme() hook instead for components
+ * @internal
+ */
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
-      mode: 'system',
+      mode: 'light',
       colorScheme: 'blue',
-      theme: 'system-blue',
+      theme: 'light-blue',
       setMode: (mode) => {
         const { colorScheme } = get()
         set({ mode, theme: combineTheme(mode, colorScheme) })
@@ -41,18 +44,6 @@ export const useThemeStore = create<ThemeState>()(
           colorScheme: config.colorScheme,
           theme: combineTheme(config.mode, config.colorScheme),
         })
-      },
-      getEffectiveMode: () => {
-        const { mode } = get()
-        if (mode === 'system') {
-          if (typeof window !== 'undefined') {
-            return window.matchMedia('(prefers-color-scheme: dark)').matches
-              ? 'dark'
-              : 'light'
-          }
-          return 'light' // Default for SSR
-        }
-        return mode
       },
       getTheme: () => {
         const { mode, colorScheme } = get()

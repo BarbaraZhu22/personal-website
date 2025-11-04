@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useThemeStore } from "@/store";
+import { useTheme } from "@/hooks";
 import { useLanguageStore, Language } from "@/store";
 import { t } from "@/lib/i18n";
-import { colorSchemes, ColorScheme, ThemeMode } from "@/lib/themes";
+import { colorSchemes, ColorScheme } from "@/lib/theme";
 import styles from "./TopBar.module.css";
 
 const languageNames: Record<Language, string> = {
@@ -15,7 +15,7 @@ const languageNames: Record<Language, string> = {
 };
 
 export default function TopBar() {
-  const { mode, colorScheme, setMode, setColorScheme } = useThemeStore();
+  const { mode, colorScheme, setMode, setColorScheme } = useTheme();
   const { language, setLanguage } = useLanguageStore();
   const [isVisible, setIsVisible] = useState(true);
 
