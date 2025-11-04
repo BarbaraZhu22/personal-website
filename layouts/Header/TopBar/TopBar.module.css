@@ -4,14 +4,26 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background-color: var(--color-background);
-  border-bottom: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-background) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 15%, var(--color-border));
   padding: clamp(0.375rem, 1vw + 0.125rem, 0.5rem) 0;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 4px 16px 0 color-mix(in srgb, var(--color-primary) 10%, rgba(0, 0, 0, 0.1)),
+    inset 0 1px 0 0 color-mix(in srgb, var(--color-foreground) 5%, transparent);
   /* Smooth show/hide transition */
   composes: transition-transform from global;
   transform: translateY(0);
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dark .topBar {
+  background: color-mix(in srgb, var(--color-background) 60%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 20%, var(--color-border));
+  box-shadow: 
+    0 4px 16px 0 color-mix(in srgb, var(--color-primary) 15%, rgba(0, 0, 0, 0.3)),
+    inset 0 1px 0 0 color-mix(in srgb, var(--color-foreground) 10%, transparent);
 }
 
 .topBar.visible {
