@@ -11,22 +11,45 @@ interface Particle {
   basePosition: THREE.Vector3
 }
 
-export default function ParticleBackground() {
+export interface ParticleBackgroundProps {
+  materialType?: 'basic' | 'standard' | 'phong'
+  particleDensity?: number
+  particleSize?: number
+  mouseAlign?: boolean
+  colorRange?: [number, number, number][] // Array of RGB color tuples
+  autoRotate?: boolean
+  zIndex?: number
+}
+
+const DEFAULT_COLORS: [number, number, number][] = [
+  [255, 107, 107], // Red
+  [78, 205, 196],  // Cyan
+  [69, 183, 209],  // Blue
+  [150, 206, 180], // Mint
+  [254, 202, 87],  // Yellow
+  [255, 159, 243], // Pink
+  [84, 160, 255],  // Bright Blue
+  [95, 39, 205],   // Purple
+]
+
+export default function ParticleBackground({
+  materialType = 'basic',
+  particleDensity = 50,
+  particleSize = 0.4,
+  mouseAlign = false,
+  colorRange = DEFAULT_COLORS,
+  autoRotate = false,
+  zIndex = 1000,
+}: ParticleBackgroundProps = {}) {
   const containerRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<ThreePlayer | null>(null)
-  const particlesRef = useRef<{
-    background: Particle[]
-    flee: Particle[]
-    follow: Particle[]
-  }>({
-    background: [],
-    flee: [],
-    follow: [],
-  })
+  const particlesRef = useRef<Particle[]>([])
+  const groupRef = useRef<THREE.Group | null>(null)
   const mouseRef = useRef<THREE.Vector2>(new THREE.Vector2())
   const mouseWorldRef = useRef<THREE.Vector3>(new THREE.Vector3())
   const lastMouseMoveRef = useRef<number>(0)
   const animationFrameIdRef = useRef<number | null>(null)
+  const rotationRef = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0))
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -71,38 +94,69 @@ export default function ParticleBackground() {
 
     playerRef.current = player
 
-    // Create beautiful colors palette
-    const colors = [
-      0xff6b6b, // Red
-      0x4ecdc4, // Cyan
-      0x45b7d1, // Blue
-      0x96ceb4, // Mint
-      0xfeca57, // Yellow
-      0xff9ff3, // Pink
-      0x54a0ff, // Bright Blue
-      0x5f27cd, // Purple
-    ]
+    // Add lighting for Standard and Phong materials
+    if (materialType === 'standard' || materialType === 'phong') {
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
+      player.scene.add(ambientLight)
+      
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8)
+      directionalLight.position.set(10, 10, 5)
+      player.scene.add(directionalLight)
+    }
 
-    // Group 1: Big background particles (low z-index, beautiful colors)
-    const backgroundGroup = new THREE.Group()
-    backgroundGroup.name = 'background'
-    const backgroundParticles: Particle[] = []
+    // Helper function to create material based on materialType
+    const createMaterial = (color: THREE.Color): THREE.Material => {
+      switch (materialType) {
+        case 'standard':
+          return new THREE.MeshStandardMaterial({
+            color,
+            transparent: true,
+            opacity: 0.6,
+            metalness: 0.3,
+            roughness: 0.4,
+          })
+        case 'phong':
+          return new THREE.MeshPhongMaterial({
+            color,
+            transparent: true,
+            opacity: 0.6,
+            shininess: 100,
+          })
+        case 'basic':
+        default:
+          return new THREE.MeshBasicMaterial({
+            color,
+            transparent: true,
+            opacity: 0.6,
+          })
+      }
+    }
+
+    // Convert colorRange to THREE.Color array
+    const colors = colorRange.map(([r, g, b]) => 
+      new THREE.Color(r / 255, g / 255, b / 255)
+    )
+
+    // Create a single particle group
+    const particleGroup = new THREE.Group()
+    particleGroup.name = 'particles'
+    const particles: Particle[] = []
     
-    for (let i = 0; i < 50; i++) {
-      const geometry = new THREE.SphereGeometry(0.4, 12, 12)
-      const color = new THREE.Color(colors[Math.floor(Math.random() * colors.length)])
-      const material = new THREE.MeshBasicMaterial({
-        color,
-        transparent: true,
-        opacity: 0.5,
-      })
+    // Determine z-position range based on mode
+    const zRange = mouseAlign ? [0, 5] : [10, 25]
+    const spreadRange = mouseAlign ? 18 : 25
+    
+    for (let i = 0; i < particleDensity; i++) {
+      const geometry = new THREE.SphereGeometry(particleSize, 12, 12)
+      const color = colors[Math.floor(Math.random() * colors.length)]
+      const material = createMaterial(color)
       const mesh = new THREE.Mesh(geometry, material)
       
-      // Spread particles behind (further from camera)
+      // Position particles
       mesh.position.set(
-        (Math.random() - 0.5) * 25,
-        (Math.random() - 0.5) * 25,
-        Math.random() * 15 + 10 // z between 10 and 25
+        (Math.random() - 0.5) * spreadRange,
+        (Math.random() - 0.5) * spreadRange,
+        Math.random() * (zRange[1] - zRange[0]) + zRange[0]
       )
       
       const velocity = new THREE.Vector3(
@@ -111,94 +165,18 @@ export default function ParticleBackground() {
         (Math.random() - 0.5) * 0.005
       )
       
-      backgroundGroup.add(mesh)
-      backgroundParticles.push({
+      particleGroup.add(mesh)
+      particles.push({
         mesh,
         velocity,
         basePosition: mesh.position.clone(),
       })
     }
 
-    // Group 2: Big particles that flee from mouse
-    const fleeGroup = new THREE.Group()
-    fleeGroup.name = 'flee'
-    const fleeParticles: Particle[] = []
-    
-    for (let i = 0; i < 30; i++) {
-      const geometry = new THREE.SphereGeometry(0.35, 12, 12)
-      const color = new THREE.Color(colors[Math.floor(Math.random() * colors.length)])
-      const material = new THREE.MeshBasicMaterial({
-        color,
-        transparent: true,
-        opacity: 0.6,
-      })
-      const mesh = new THREE.Mesh(geometry, material)
-      
-      mesh.position.set(
-        (Math.random() - 0.5) * 20,
-        (Math.random() - 0.5) * 20,
-        Math.random() * 8 + 5 // z between 5 and 13
-      )
-      
-      const velocity = new THREE.Vector3(
-        (Math.random() - 0.5) * 0.02,
-        (Math.random() - 0.5) * 0.02,
-        (Math.random() - 0.5) * 0.01
-      )
-      
-      fleeGroup.add(mesh)
-      fleeParticles.push({
-        mesh,
-        velocity,
-        basePosition: mesh.position.clone(),
-      })
-    }
-
-    // Group 3: Tiny particles that follow mouse
-    const followGroup = new THREE.Group()
-    followGroup.name = 'follow'
-    const followParticles: Particle[] = []
-    
-    for (let i = 0; i < 100; i++) {
-      const geometry = new THREE.SphereGeometry(0.08, 8, 8)
-      const color = new THREE.Color(colors[Math.floor(Math.random() * colors.length)])
-      const material = new THREE.MeshBasicMaterial({
-        color,
-        transparent: true,
-        opacity: 0.7,
-      })
-      const mesh = new THREE.Mesh(geometry, material)
-      
-      mesh.position.set(
-        (Math.random() - 0.5) * 18,
-        (Math.random() - 0.5) * 18,
-        Math.random() * 5 // z between 0 and 5
-      )
-      
-      const velocity = new THREE.Vector3(
-        (Math.random() - 0.5) * 0.03,
-        (Math.random() - 0.5) * 0.03,
-        (Math.random() - 0.5) * 0.02
-      )
-      
-      followGroup.add(mesh)
-      followParticles.push({
-        mesh,
-        velocity,
-        basePosition: mesh.position.clone(),
-      })
-    }
-
-    // Add groups to scene
-    player.scene.add(backgroundGroup)
-    player.scene.add(fleeGroup)
-    player.scene.add(followGroup)
-
-    particlesRef.current = {
-      background: backgroundParticles,
-      flee: fleeParticles,
-      follow: followParticles,
-    }
+    // Add group to scene
+    player.scene.add(particleGroup)
+    groupRef.current = particleGroup
+    particlesRef.current = particles
 
 
     // Mouse move handler
@@ -234,102 +212,50 @@ export default function ParticleBackground() {
       const timeSinceMouseMove = time - lastMouseMoveRef.current
       const hasRecentMouseMove = timeSinceMouseMove < 1000 // 1 second threshold
 
-      // Update background particles (slow random movement)
-      particlesRef.current.background.forEach((particle) => {
-        // Slow random movement
-        particle.velocity.x += (Math.random() - 0.5) * 0.0005
-        particle.velocity.y += (Math.random() - 0.5) * 0.0005
-        particle.velocity.z += (Math.random() - 0.5) * 0.0003
+      // Auto-rotate the group if enabled
+      if (autoRotate && groupRef.current) {
+        rotationRef.current.y += 0.0005
+        rotationRef.current.x += 0.0003
+        groupRef.current.rotation.set(
+          rotationRef.current.x,
+          rotationRef.current.y,
+          rotationRef.current.z
+        )
+      }
+
+      // Update particles
+      particlesRef.current.forEach((particle) => {
+        // Mouse alignment behavior
+        if (mouseAlign && hasRecentMouseMove) {
+          // Align with mouse movement
+          const direction = mouseWorldRef.current.clone().sub(particle.mesh.position).normalize()
+          particle.velocity.lerp(direction.multiplyScalar(0.1), 0.1)
+        } else {
+          // Random movement
+          particle.velocity.x += (Math.random() - 0.5) * 0.0005
+          particle.velocity.y += (Math.random() - 0.5) * 0.0005
+          particle.velocity.z += (Math.random() - 0.5) * 0.0003
+        }
         
         // Apply damping
-        particle.velocity.multiplyScalar(0.98)
+        const damping = mouseAlign ? 0.95 : 0.98
+        particle.velocity.multiplyScalar(damping)
         
         // Update position
         particle.mesh.position.add(particle.velocity)
         
         // Boundary check and wrap around
-        const range = 20
+        const range = mouseAlign ? 16 : 20
+        const [zMin, zMax] = mouseAlign ? [0, 5] : [10, 25]
+        
         if (Math.abs(particle.mesh.position.x) > range) {
           particle.mesh.position.x = (Math.random() - 0.5) * range * 2
         }
         if (Math.abs(particle.mesh.position.y) > range) {
           particle.mesh.position.y = (Math.random() - 0.5) * range * 2
         }
-        if (particle.mesh.position.z < 10 || particle.mesh.position.z > 25) {
-          particle.mesh.position.z = Math.random() * 15 + 10
-        }
-      })
-
-      // Update flee particles
-      particlesRef.current.flee.forEach((particle) => {
-        if (hasRecentMouseMove) {
-          // Calculate distance from mouse
-          const distance = particle.mesh.position.distanceTo(mouseWorldRef.current)
-          
-          if (distance < 5) {
-            // Flee from mouse
-            const fleeDirection = particle.mesh.position.clone().sub(mouseWorldRef.current).normalize()
-            const fleeStrength = (5 - distance) / 5 // Stronger when closer
-            particle.velocity.add(fleeDirection.multiplyScalar(fleeStrength * 0.05))
-          }
-        }
-        
-        // Random movement
-        particle.velocity.x += (Math.random() - 0.5) * 0.001
-        particle.velocity.y += (Math.random() - 0.5) * 0.001
-        particle.velocity.z += (Math.random() - 0.5) * 0.001
-        
-        // Apply damping
-        particle.velocity.multiplyScalar(0.97)
-        
-        // Update position
-        particle.mesh.position.add(particle.velocity)
-        
-        // Boundary check
-        const range = 18
-        if (Math.abs(particle.mesh.position.x) > range) {
-          particle.velocity.x *= -0.5
-          particle.mesh.position.x = Math.sign(particle.mesh.position.x) * range
-        }
-        if (Math.abs(particle.mesh.position.y) > range) {
-          particle.velocity.y *= -0.5
-          particle.mesh.position.y = Math.sign(particle.mesh.position.y) * range
-        }
-        if (particle.mesh.position.z < 5 || particle.mesh.position.z > 13) {
-          particle.velocity.z *= -0.5
-          particle.mesh.position.z = Math.max(5, Math.min(13, particle.mesh.position.z))
-        }
-      })
-
-      // Update follow particles
-      particlesRef.current.follow.forEach((particle) => {
-        if (hasRecentMouseMove) {
-          // Align with mouse movement
-          const direction = mouseWorldRef.current.clone().sub(particle.mesh.position).normalize()
-          particle.velocity.lerp(direction.multiplyScalar(0.1), 0.1)
-        } else {
-          // Random movement when no mouse
-          particle.velocity.x += (Math.random() - 0.5) * 0.002
-          particle.velocity.y += (Math.random() - 0.5) * 0.002
-          particle.velocity.z += (Math.random() - 0.5) * 0.001
-        }
-        
-        // Apply damping
-        particle.velocity.multiplyScalar(0.95)
-        
-        // Update position
-        particle.mesh.position.add(particle.velocity)
-        
-        // Boundary check
-        const range = 16
-        if (Math.abs(particle.mesh.position.x) > range) {
-          particle.mesh.position.x = (Math.random() - 0.5) * range * 2
-        }
-        if (Math.abs(particle.mesh.position.y) > range) {
-          particle.mesh.position.y = (Math.random() - 0.5) * range * 2
-        }
-        if (particle.mesh.position.z < 0 || particle.mesh.position.z > 5) {
-          particle.mesh.position.z = Math.random() * 5
+        if (particle.mesh.position.z < zMin || particle.mesh.position.z > zMax) {
+          particle.mesh.position.z = Math.random() * (zMax - zMin) + zMin
         }
       })
 
@@ -339,15 +265,19 @@ export default function ParticleBackground() {
       animationFrameIdRef.current = requestAnimationFrame(animate)
     }
 
-    // Add event listeners
-    window.addEventListener('mousemove', handleMouseMove)
+    // Add event listeners (only if mouseAlign is enabled)
+    if (mouseAlign) {
+      window.addEventListener('mousemove', handleMouseMove)
+    }
 
     // Start animation
     animate()
 
     // Cleanup
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
+      if (mouseAlign) {
+        window.removeEventListener('mousemove', handleMouseMove)
+      }
       window.removeEventListener('resize', handleResize)
       if (animationFrameIdRef.current !== null) {
         cancelAnimationFrame(animationFrameIdRef.current)
@@ -358,8 +288,14 @@ export default function ParticleBackground() {
         container.removeChild(canvas)
       }
     }
-  }, [])
+  }, [materialType, particleDensity, particleSize, mouseAlign, colorRange, autoRotate])
 
-  return <div ref={containerRef} className={styles.container} />
+  return (
+    <div 
+      ref={containerRef} 
+      className={styles.container}
+      style={{ zIndex }}
+    />
+  )
 }
 

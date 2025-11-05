@@ -32,20 +32,6 @@ export default async function Home() {
             <div className={`${styles.skillTag} hover-scale transition-transform`}>Agent-Based Interaction Design</div>
           </div>
         </Card>
-
-        <Card title="Quick Links" className="hover-lift transition-all">
-          <div className={styles.links}>
-            <a href="/about" className={`${styles.link} hover-color transition-colors`}>
-              Learn more about me →
-            </a>
-            <a href="/work" className={`${styles.link} hover-color transition-colors`}>
-              View my portfolio →
-            </a>
-            <a href="/contact" className={`${styles.link} hover-color transition-colors`}>
-              Get in touch →
-            </a>
-          </div>
-        </Card>
       </div>
     </div>
   )
