@@ -86,6 +86,7 @@ body {
   text-rendering: optimizeLegibility;
   font-feature-settings: "kern" 1;
   font-kerning: normal;
+  user-select: none;
 }
 
 /* Main content area with padding for fixed header and footer */
@@ -132,6 +133,10 @@ body,
 [class*="border-"] {
   transition: background-color 0.3s ease, color 0.3s ease,
     border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn {
+  cursor: pointer;
 }
 
 a {
@@ -324,4 +329,32 @@ a {
 
 .fluid-min-width-selector {
   min-width: clamp(15rem, 30vw, 18rem);
+}
+
+/* Typing effect styles */
+.typing-effect {
+  display: inline-block;
+  position: relative;
+}
+
+.typing-effect::after {
+  content: '|';
+  display: inline-block;
+  animation: typingCursor 1s infinite;
+  margin-left: 2px;
+  color: var(--color-foreground);
+  font-weight: 300;
+}
+
+@keyframes typingCursor {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+.typing-effect.typing-complete::after {
+  display: none;
 }

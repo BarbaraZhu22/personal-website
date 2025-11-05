@@ -79,6 +79,12 @@ const translations: Translations = {
     es: 'Todos los derechos reservados.',
     fr: 'Tous droits réservés.',
   },
+  welcomeGreeting: {
+    en: 'Hi! Welcome to my website',
+    zh: '嗨！欢迎来到我的网站',
+    es: '¡Hola! Bienvenido a mi sitio web',
+    fr: 'Salut! Bienvenue sur mon site web',
+  },
 }
 
 export const t = (key: string, language: Language): string => {

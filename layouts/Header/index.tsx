@@ -8,7 +8,7 @@ import styles from './Header.module.css'
 
 export default function Header() {
   const pathname = usePathname()
-  const { t } = useTranslation()
+  const { t, language } = useTranslation()
 
   const navItems = [
     { href: '/', label: t('home') },
@@ -28,7 +28,7 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`${styles.navLink} ${isActive ? styles.active : ''}`}
+                  className={`${styles.navLink} ${isActive ? styles.active : ''} ${language === 'zh' ? styles.chinese : ''}`}
                 >
                   <span className={styles.navLinkText}>{item.label}</span>
                 </Link>

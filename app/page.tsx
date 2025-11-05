@@ -1,5 +1,5 @@
-import { Card, Button } from '@/components'
-import { homeContent } from '@/content'
+import { Card } from '@/components'
+import { Profile } from '@/components'
 import styles from './page.module.css'
 
 // ISR: Revalidate every 300 seconds
@@ -8,17 +8,8 @@ export const revalidate = 300
 export default async function Home() {
   return (
     <div className={`container ${styles.container} page-enter`}>
+      <Profile />
       <div className={styles.content}>
-        <Card title={homeContent.welcome.title} className="hover-lift transition-all">
-          <p className={`text-text-muted ${styles.paragraph}`}>
-            {homeContent.welcome.description}
-          </p>
-          <div className={styles.buttonGroup}>
-            <Button variant="primary" className={styles.button}>View My Work</Button>
-            <Button variant="default" className={styles.button}>Contact Me</Button>
-          </div>
-        </Card>
-
         <Card title="Featured Skills" className="hover-lift transition-all">
           <p className={`text-text-muted ${styles.paragraph}`}>
             Specialized in modern frontend technologies and best practices.
