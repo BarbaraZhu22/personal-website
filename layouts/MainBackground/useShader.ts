@@ -40,11 +40,9 @@ export const createNoiseCloud = `// Create noise cloud using 2D Perlin noise met
 // Vertex shader (shared for both themes)
 export const vertexShader = `
   varying vec2 vUv;
-  varying vec3 vPosition;
 
   void main() {
     vUv = uv;
-    vPosition = position;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
@@ -55,61 +53,13 @@ export const cloudFragmentShader = `
   uniform vec2 uResolution;
   uniform vec3 uColor1; // Cloud color (bright)
   uniform vec3 uColor2; // Shadow color (darker)
-  uniform float uOpacity;
+  uniform vec2 uCloudPosition; // Cloud center position (animated)
+  uniform int uNumSteps; // Number of color steps for cloud rendering
 
   varying vec2 vUv;
-  varying vec3 vPosition;
-
-  // Gardner cloud parameters
-  vec3 R = vec3(1., 2., 1.);              // ellipsoid radius
-  vec3 L = normalize(vec3(-0.4, 0.3, 1.)); // light source direction
-  const float AMBIENT = 0.4;              // ambient luminosity
-
-  const float PI = 3.1415927;
-
-  // Noise matrix
-  mat3 m = mat3( 0.00,  0.80,  0.60,
-                -0.80,  0.36, -0.48,
-                -0.60, -0.48,  0.64 );
 
   float hash( float n ) {
     return fract(sin(n)*43758.5453);
-  }
-
-  float noise( in vec3 x ) {
-    vec3 p = floor(x);
-    vec3 f = fract(x);
-    f = f*f*(3.0-2.0*f);
-    float n = p.x + p.y*57.0 + 113.0*p.z;
-    float res = mix(mix(mix( hash(n+  0.0), hash(n+  1.0),f.x),
-                        mix( hash(n+ 57.0), hash(n+ 58.0),f.x),f.y),
-                    mix(mix( hash(n+113.0), hash(n+114.0),f.x),
-                        mix( hash(n+170.0), hash(n+171.0),f.x),f.y),f.z);
-    return res;
-  }
-
-  float fbm( vec3 p ) {
-    p += uTime * 0.05;
-    float f;
-    f  = 0.5000*noise( p ); p = m*p*2.02;
-    f += 0.2500*noise( p ); p = m*p*2.03;
-    f += 0.1250*noise( p ); p = m*p*2.01;
-    f += 0.0625*noise( p );
-    return f;
-  }
-
-  float snoise( in vec3 x ) {
-    return 2.*noise(x)-1.;
-  }
-
-  float sfbm( vec3 p ) {
-    p += uTime * 0.05;
-    float f;
-    f  = 0.5000*snoise( p ); p = m*p*2.02;
-    f += 0.2500*snoise( p ); p = m*p*2.03;
-    f += 0.1250*snoise( p ); p = m*p*2.01;
-    f += 0.0625*snoise( p );
-    return f;
   }
 
   // 2D Perlin noise function
@@ -151,24 +101,15 @@ export const cloudFragmentShader = `
   void main() {
     vec2 uv = vUv;
     
-    //  Background Color    
-    vec3 finalColor = vec3(0.0, 0.0, 0.0);
+    // Cloud center (animated position)
+    vec2 cloudCenter = uCloudPosition;
     
-    // Cloud center (center of screen)
-    vec2 cloudCenter = vec2(0.5, 0.5);
-    
-    // Cloud size as ratio of plane size (larger for better visibility)
-    float cloudSizeRatio = 0.5;
+    // Cloud size as ratio of plane size (80% coverage)
+    float cloudSizeRatio = 0.8;
     vec2 cloudSize = vec2(cloudSizeRatio, cloudSizeRatio * 0.7); // Oblong shape
     
     // Create noise cloud using 2D Perlin noise method
     float cloudDensity = createNoiseCloud(uv, cloudCenter, cloudSize);
-    
-    // Calculate lighting for cloud (simple gradient from top-left)
-    vec2 toLight = cloudCenter - uv;
-    float lightIntensity = dot(normalize(toLight), normalize(vec2(-0.5, 0.5)));
-    lightIntensity = (lightIntensity + 1.0) * 0.5; // Normalize to 0-1
-    lightIntensity = smoothstep(0.2, 0.9, lightIntensity); // Improved contrast curve
     
     // ============================================================================
     // UNIFIED DENSITY-TO-COLOR MAPPING WITH NATURAL TRANSITIONS
@@ -184,7 +125,7 @@ export const cloudFragmentShader = `
     
     // Base colors - shadow color is the base
     vec3 shadowColor = uColor2;
-    vec3 whiteColor = vec3(1.0, 1.0, 1.0);
+    vec3 brightColor = uColor1;
     
     // Use density directly as alpha
     float cloudAlpha = cloudDensity;
@@ -195,61 +136,36 @@ export const cloudFragmentShader = `
     float normalizedDensity = cloudDensity;
     
     // Create stepped color bands for natural layer transitions
-    // Formula: step_count = floor(normalized_density / step_size)
-    const float STEP_SIZE = 0.05;  // Change color every 0.05
-    const int NUM_STEPS = 18;      // Number of color steps
+    int NUM_STEPS = uNumSteps;      // Number of color steps (from uniform)
     
-    // Calculate which step we're in (0 to NUM_STEPS-1)
+    // Apply stepping DIRECTLY to normalized density FIRST to create distinct layers
     float stepIndex = floor(normalizedDensity * float(NUM_STEPS));
     stepIndex = clamp(stepIndex, 0.0, float(NUM_STEPS - 1));
     
-    // Normalize step index to 0.0-1.0 for mixing
-    float stepNormalized = stepIndex / float(NUM_STEPS - 1);
+    // Normalize step index to 0.0-1.0 range (this creates discrete steps matching NUM_STEPS)
+    float steppedDensity = stepIndex / float(NUM_STEPS - 1);
     
-    // Apply bias based on normalized density:
-    // - Below 0.5: More shadow color (slower transition to white)
-    // - Above 0.5: More cloud color/white (faster transition to white)
-    float mixFactor;
+    // Use stepped density directly for color mixing (preserves all steps)
+    float mixFactor = steppedDensity; // Direct mapping ensures all steps are visible
     
-    if (normalizedDensity < 0.5) {
-      // Below 0.5: Bias towards shadow color
-      mixFactor = normalizedDensity * 0.8; // Range: 0.0 to 0.4
-    } else {
-      // Above 0.5: Bias towards cloud color (white)
-      float aboveHalf = (normalizedDensity - 0.5) / 0.5; // 0.0 to 1.0
-      mixFactor = 0.4 + aboveHalf * 0.6; // Range: 0.4 to 1.0
-    }
-    
-    // Apply stepped effect with natural smooth transitions
-    // Quantize mixFactor to steps
+    // Apply stepped effect again to ensure absolute distinctness
     float stepMixFactor = floor(mixFactor * float(NUM_STEPS)) / float(NUM_STEPS - 1);
     
-    // Blend step and smooth for natural transitions (increase smoothness)
-    float smoothBlend = 0.6; // More smooth = more natural transitions
+    // Very minimal smoothing to preserve step visibility (almost pure stepped)
+    float smoothBlend = 0.0; // Pure stepped = all layers visible
     mixFactor = mix(stepMixFactor, mixFactor, smoothBlend);
     
-    // Apply natural easing using smoothstep for smoother transitions
-    mixFactor = smoothstep(0.0, 1.0, mixFactor);
-    
-    // Apply final sharpening
-    float sharpDensity = pow(mixFactor, 0.7);
+    // Apply final sharpening (higher power = more contrast between layers)
+    float sharpDensity = pow(mixFactor, 0.95); // Very high power = very sharp transitions
     
     // Mix shadow (base) and white using natural transitions
-    vec3 cloudColor = mix(shadowColor, whiteColor, sharpDensity);
+    vec3 cloudColor = mix(shadowColor, brightColor, sharpDensity);
     
     // Ensure color values are clamped between 0.0 and 1.0
     cloudColor = clamp(cloudColor, 0.0, 1.0);
-    
-    // Add highlight color (uColor1) on top layer only (high density areas)
-    if (normalizedDensity > 0.9) {
-      cloudColor += uColor1;
-    }
-    
-    // Clamp again after adding highlight
-    cloudColor = clamp(cloudColor, 0.0, 1.0);
-    
+        
     // Set final color and alpha
-    finalColor = cloudColor;
+    vec3 finalColor = cloudColor;
     
     // Apply overall opacity with cloud alpha
     float alpha = cloudAlpha;
@@ -267,7 +183,6 @@ export const starFragmentShader = `
   uniform float uStarDensity;
 
   varying vec2 vUv;
-  varying vec3 vPosition;
 
   // Random function
   float random(vec2 st) {

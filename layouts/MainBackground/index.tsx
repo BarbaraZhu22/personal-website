@@ -14,13 +14,13 @@ import {
 // Helper function to convert hex color to THREE.Vector3 RGB values (0-1 range)
 function hexToVector3(hex: string): THREE.Vector3 {
   // Remove # if present
-  const cleanHex = hex.replace('#', '');
-  
+  const cleanHex = hex.replace("#", "");
+
   // Parse RGB values
   const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
   const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
   const b = parseInt(cleanHex.substring(4, 6), 16) / 255;
-  
+
   return new THREE.Vector3(r, g, b);
 }
 
@@ -30,7 +30,12 @@ export default function MainBackground() {
   const planeRef = useRef<THREE.Mesh | null>(null);
   const materialRef = useRef<THREE.ShaderMaterial | null>(null);
   const animationFrameRef = useRef<number | null>(null);
-  const { isDark, isLight, colors } = useTheme();
+  const cloudPositionRef = useRef<THREE.Vector2>(new THREE.Vector2(0.5, 0.5)); // Start at center
+  const cloudVelocityRef = useRef<THREE.Vector2>(
+    new THREE.Vector2(0.00015, 0.00012)
+  ); // Slow floating speed
+
+  const { isDark, colors } = useTheme();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -62,10 +67,8 @@ export default function MainBackground() {
       }
     );
 
-    // Disable controls for background
-    // player.controls.enabled = false;
-    // player.stopControls = true;
-
+    player.controls.enabled = false;
+    player.stopControls = true;
     // Set camera position
     player.camera.position.set(0, 0, 1);
     player.camera.lookAt(0, 0, 0);
@@ -83,14 +86,19 @@ export default function MainBackground() {
     const fov = 75 * (Math.PI / 180); // Convert to radians
     const planeHeight = 2 * Math.tan(fov / 2) * distance;
     const planeWidth = planeHeight * (width / height);
-    
+
     // Create plane geometry matching viewport size exactly
-    const planeGeometry = new THREE.PlaneGeometry(planeWidth, planeHeight, 32, 32);
+    const planeGeometry = new THREE.PlaneGeometry(
+      planeWidth,
+      planeHeight,
+      32,
+      32
+    );
 
     // Create shader material based on theme
     const isDarkMode = isDark;
     // Convert theme color to RGB Vector3 for shader
-    const themeColor2 = hexToVector3(colors.primary).multiplyScalar(0.2);
+    const themeColor2 = hexToVector3(colors.primary);
     const shaderMaterial = new THREE.ShaderMaterial({
       vertexShader,
       fragmentShader: isDarkMode ? starFragmentShader : cloudFragmentShader,
@@ -105,9 +113,10 @@ export default function MainBackground() {
         : {
             uTime: { value: 0 },
             uResolution: { value: new THREE.Vector2(width, height) },
-            uColor1: { value: new THREE.Vector3(1.0, 0.95, 0.9) }, // Bright cloud color
+            uColor1: { value: new THREE.Vector3(0.85, 0.55, 0.2) }, // Bright cloud color
             uColor2: { value: themeColor2 }, // Shadow cloud color - uses theme color
-            uOpacity: { value: 0.8 },
+            uCloudPosition: { value: cloudPositionRef.current.clone() }, // Cloud position
+            uNumSteps: { value: 33 }, // Number of color steps
           },
       transparent: true,
       side: THREE.DoubleSide,
@@ -119,9 +128,15 @@ export default function MainBackground() {
     const plane = new THREE.Mesh(planeGeometry, shaderMaterial);
 
     // Position plane as background (facing camera)
-    // Make sure it covers the full viewport
+    // Rotate degrees around Y axis for 3D effect
+
+    // Scale up to compensate for rotation (cos(45°) = √2/2 ≈ 0.707)
+    // We need to scale by 1/cos(45°) ≈ 1.414 to maintain full screen coverage
+    const rotationAngle = Math.PI / 12;
+    plane.rotateY(rotationAngle);
+    const scaleFactor = 1.0 / Math.cos(rotationAngle); // Approximately 1.414
+    plane.scale.set(scaleFactor, scaleFactor, 1);
     plane.position.set(0, 0, 0);
-    plane.scale.set(1, 1, 1);
 
     player.scene.add(plane);
     planeRef.current = plane;
@@ -133,6 +148,43 @@ export default function MainBackground() {
 
       if (shaderMaterial.uniforms.uTime) {
         shaderMaterial.uniforms.uTime.value = time;
+      }
+
+      // Update cloud position for floating animation (only in light theme)
+      if (shaderMaterial.uniforms.uCloudPosition) {
+        // Update position
+        cloudPositionRef.current.x += cloudVelocityRef.current.x;
+        cloudPositionRef.current.y += cloudVelocityRef.current.y;
+
+        // Boundary detection and bounce back
+        // Cloud size is 0.8 (80% of plane), so it can only move 10% in each direction
+        // Center starts at 0.5, so it can move from 0.4 to 0.6 (±0.1 from center)
+        const centerX = 0.5;
+        const centerY = 0.5;
+        const maxMovement = 0.1; // 10% movement allowed
+
+        // Bounce back when hitting boundaries
+        if (cloudPositionRef.current.x > centerX + maxMovement) {
+          cloudPositionRef.current.x = centerX + maxMovement;
+          cloudVelocityRef.current.x *= -1; // Reverse direction
+        } else if (cloudPositionRef.current.x < centerX - maxMovement) {
+          cloudPositionRef.current.x = centerX - maxMovement;
+          cloudVelocityRef.current.x *= -1; // Reverse direction
+        }
+
+        if (cloudPositionRef.current.y > centerY + maxMovement) {
+          cloudPositionRef.current.y = centerY + maxMovement;
+          cloudVelocityRef.current.y *= -1; // Reverse direction
+        } else if (cloudPositionRef.current.y < centerY - maxMovement) {
+          cloudPositionRef.current.y = centerY - maxMovement;
+          cloudVelocityRef.current.y *= -1; // Reverse direction
+        }
+
+        // Update uniform
+        shaderMaterial.uniforms.uCloudPosition.value.set(
+          cloudPositionRef.current.x,
+          cloudPositionRef.current.y
+        );
       }
 
       player.renderer.render(player.scene, player.camera);
@@ -152,11 +204,16 @@ export default function MainBackground() {
       // Recalculate plane size for new aspect ratio
       const newPlaneHeight = 2 * Math.tan(fov / 2) * distance;
       const newPlaneWidth = newPlaneHeight * (newWidth / newHeight);
-      
+
       // Update plane geometry if plane exists
       if (planeRef.current) {
         planeRef.current.geometry.dispose();
-        planeRef.current.geometry = new THREE.PlaneGeometry(newPlaneWidth, newPlaneHeight, 32, 32);
+        planeRef.current.geometry = new THREE.PlaneGeometry(
+          newPlaneWidth,
+          newPlaneHeight,
+          32,
+          32
+        );
       }
 
       if (shaderMaterial.uniforms.uResolution) {
@@ -178,7 +235,7 @@ export default function MainBackground() {
         container.removeChild(canvas);
       }
     };
-  }, []); // Empty deps - setup once
+  }, []); // Initialize once
 
   // Update shader when theme changes
   useEffect(() => {
@@ -224,6 +281,8 @@ export default function MainBackground() {
       // Remove light theme uniforms if they exist
       delete material.uniforms.uColor1;
       delete material.uniforms.uColor2;
+      delete material.uniforms.uCloudPosition;
+      delete material.uniforms.uNumSteps;
     } else {
       // Update or create light theme uniforms
       if (material.uniforms.uTime) {
@@ -240,7 +299,10 @@ export default function MainBackground() {
 
       material.uniforms.uColor1 = { value: new THREE.Vector3(1.0, 0.95, 0.9) }; // Bright cloud color
       material.uniforms.uColor2 = { value: themeColor2 }; // Shadow cloud color - uses theme color
-      material.uniforms.uOpacity = { value: 0.8 };
+      material.uniforms.uCloudPosition = {
+        value: cloudPositionRef.current.clone(),
+      }; // Cloud position
+      material.uniforms.uNumSteps = { value: 18 }; // Number of color steps
 
       // Remove dark theme uniforms if they exist
       delete material.uniforms.uStarColor;
@@ -249,7 +311,7 @@ export default function MainBackground() {
 
     // Recompile shader
     material.needsUpdate = true;
-  }, [isDark, isLight, colors]);
+  }, [isDark, colors.primary]);
 
   return <div ref={containerRef} className={styles.mainBg}></div>;
 }
