@@ -90,6 +90,7 @@ body {
 
 /* Main content area with padding for fixed header and footer */
 .main-content {
+  position: relative;
   min-height: 100vh;
   padding-top: clamp(
     5rem,

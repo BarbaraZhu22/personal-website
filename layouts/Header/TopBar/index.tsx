@@ -17,7 +17,7 @@ const languageNames: Record<Language, string> = {
 export default function TopBar() {
   const { mode, colorScheme, setMode, setColorScheme } = useTheme();
   const { language, setLanguage } = useLanguageStore();
-  const [isVisible, setIsVisible] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const modes: ("light" | "dark")[] = ["light", "dark"];
   const modeIcons = {
@@ -25,54 +25,13 @@ export default function TopBar() {
     dark: "🌙",
   };
 
-  useEffect(() => {
-    // Show on mount
-    setIsVisible(true);
-
-    // Handle scroll - hide on scroll down, show on scroll up
-    let lastScrollY = window.scrollY;
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY < 50) {
-        // Near top, always show
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // Scrolling down
-        setIsVisible(false);
-      } else if (currentScrollY < lastScrollY) {
-        // Scrolling up
-        setIsVisible(true);
-      }
-
-      lastScrollY = currentScrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  const handleMouseEnter = () => {
-    setIsVisible(true);
-  };
-
-  const handleMouseLeave = () => {
-    // Only hide if scrolled down past 100px
-    if (window.scrollY > 100) {
-      setIsVisible(false);
-    }
-  };
-
   return (
     <div
-      className={`${styles.topBar} ${
-        isVisible ? styles.visible : styles.hidden
+      className={`${styles.topBar}  ${
+        isExpanded ? styles.expanded : styles.collapsed
       }`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => setIsExpanded(true)}
+      onMouseLeave={() => setIsExpanded(false)}
     >
       <div className={styles.container}>
         {/* Theme Mode Toggle */}
@@ -92,8 +51,12 @@ export default function TopBar() {
           ))}
         </div>
 
-        {/* Color Picker */}
-        <div className={styles.colorPicker}>
+        {/* Color Picker - Hidden when collapsed */}
+        <div
+          className={`${styles.colorPicker} ${
+            isExpanded ? styles.show : styles.hide
+          }`}
+        >
           {Object.entries(colorSchemes).map(([key, scheme]) => {
             const isActive = key === colorScheme;
             return (

@@ -1,28 +1,20 @@
 .topBar {
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
+  width: fit-content;
   z-index: var(--z-index-topbar);
-  background: color-mix(in srgb, var(--color-background) 70%, transparent);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 15%, var(--color-border));
-  padding: clamp(0.375rem, 1vw + 0.125rem, 0.5rem) 0;
-  box-shadow: 
-    0 4px 16px 0 color-mix(in srgb, var(--color-primary) 10%, rgba(0, 0, 0, 0.1)),
-    inset 0 1px 0 0 color-mix(in srgb, var(--color-foreground) 5%, transparent);
-  /* Smooth show/hide transition */
-  composes: transition-transform from global;
-  transform: translateY(0);
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  padding: clamp(0.3rem, 0.75vw + 0.2rem, 0.4rem) 0;
+  padding-left: clamp(1.5rem, 4vw, 2rem);
+  transition: padding 0.3s ease;
 }
 
 .dark .topBar {
   background: color-mix(in srgb, var(--color-background) 60%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 20%, var(--color-border));
-  box-shadow: 
-    0 4px 16px 0 color-mix(in srgb, var(--color-primary) 15%, rgba(0, 0, 0, 0.3)),
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--color-primary) 20%, var(--color-border));
+  box-shadow: 0 4px 16px 0
+      color-mix(in srgb, var(--color-primary) 15%, rgba(0, 0, 0, 0.3)),
     inset 0 1px 0 0 color-mix(in srgb, var(--color-foreground) 10%, transparent);
 }
 
@@ -37,22 +29,22 @@
 .container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: clamp(0.75rem, 2vw, 1rem);
+  justify-content: right;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
   width: 100%;
   max-width: 100%;
-  padding: 0 clamp(0.75rem, 2vw, 1rem);
+  padding: 0 clamp(0.5rem, 1.5vw, 0.75rem);
 }
 
 .modeToggle {
   display: flex;
   align-items: center;
-  gap: clamp(0.25rem, 0.8vw, 0.5rem);
+  gap: clamp(0.125rem, 0.5vw, 0.35rem);
 }
 
 .modeButton {
-  width: clamp(1.5rem, 3.5vw, 2rem);
-  height: clamp(1.5rem, 3.5vw, 2rem);
+  width: clamp(1.25rem, 3vw, 1.75rem);
+  height: clamp(1.25rem, 3vw, 1.75rem);
   border-radius: 0.25rem;
   border: 2px solid transparent;
   background-color: var(--color-muted);
@@ -60,7 +52,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   padding: 0;
   flex-shrink: 0;
   /* Using common transitions */
@@ -70,25 +62,37 @@
 .modeButton:hover {
   background-color: var(--color-border);
   border-color: var(--color-primary);
-  transform: scale(1.1);
 }
 
 .modeButton.active {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
-  transform: scale(1.15);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .colorPicker {
   display: flex;
   align-items: center;
-  gap: clamp(0.25rem, 1vw, 0.5rem);
+  gap: clamp(0.125rem, 0.75vw, 0.35rem);
+  transition: all 0.3s ease;
+}
+
+.colorPicker.show {
+  opacity: 1;
+  max-width: 500px;
+  margin-right: 0;
+}
+
+.colorPicker.hide {
+  opacity: 0;
+  max-width: 0;
+  margin-right: 0;
+  overflow: hidden;
 }
 
 .colorButton {
-  width: clamp(1.25rem, 3vw, 1.5rem);
-  height: clamp(1.25rem, 3vw, 1.5rem);
+  width: clamp(1rem, 2.5vw, 1.25rem);
+  height: clamp(1rem, 2.5vw, 1.25rem);
   border-radius: 50%;
   border: 2px solid var(--color-border);
   cursor: pointer;
@@ -109,15 +113,15 @@
 }
 
 .languageSelect {
-  padding: clamp(0.25rem, 0.8vw + 0.1rem, 0.375rem) clamp(0.5rem, 1.5vw + 0.25rem, 0.75rem);
+  padding: clamp(0.15rem, 0.6vw + 0.05rem, 0.25rem)
+    clamp(0.35rem, 1.2vw + 0.15rem, 0.6rem);
   border: 1px solid var(--color-border);
   border-radius: 0.25rem;
   background-color: var(--color-background);
   color: var(--color-foreground);
-  font-size: clamp(0.625rem, 1.2vw + 0.3rem, 0.75rem);
+  font-size: clamp(0.6rem, 1vw + 0.2rem, 0.7rem);
   cursor: pointer;
-  min-width: clamp(2.5rem, 8vw, 3.5rem);
+  min-width: clamp(2.25rem, 7vw, 3rem);
   /* Using common transitions */
   composes: hover-border focus-ring from global;
 }
-
