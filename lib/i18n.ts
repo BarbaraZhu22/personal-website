@@ -10,7 +10,7 @@ const translations: Translations = {
   welcome: {
     en: 'Welcome',
     zh: '欢迎',
-    es: 'Bienvenido',
+    es: 'Bienvenida',
     fr: 'Bienvenue',
   },
   theme: {
@@ -70,8 +70,8 @@ const translations: Translations = {
   yourName: {
     en: 'Frontend Developer',
     zh: '前端开发者',
-    es: 'Desarrollador Frontend',
-    fr: 'Développeur Frontend',
+    es: 'Desarrolladora Frontend',
+    fr: 'Développeuse Frontend',
   },
   rightsReserved: {
     en: 'All rights reserved.',
@@ -82,8 +82,32 @@ const translations: Translations = {
   welcomeGreeting: {
     en: 'Hi! Welcome to my website',
     zh: '嗨！欢迎来到我的网站',
-    es: '¡Hola! Bienvenido a mi sitio web',
+    es: '¡Hola! Bienvenida a mi sitio web',
     fr: 'Salut! Bienvenue sur mon site web',
+  },
+  profileFrontend: {
+    en: 'Frontend Development',
+    zh: '前端开发',
+    es: 'Desarrollo Frontend',
+    fr: 'Développement Frontend',
+  },
+  profileExperience: {
+    en: '5 Years Experience',
+    zh: '工作经验5年',
+    es: '5 Años de Experiencia',
+    fr: '5 Ans d\'Expérience',
+  },
+  profile3D: {
+    en: '3D Development',
+    zh: '3D开发',
+    es: 'Desarrollo 3D',
+    fr: 'Développement 3D',
+  },
+  profileTypeScript: {
+    en: 'TypeScript',
+    zh: 'TypeScript',
+    es: 'TypeScript',
+    fr: 'TypeScript',
   },
 }
 

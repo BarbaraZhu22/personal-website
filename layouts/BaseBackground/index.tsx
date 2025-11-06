@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useThemeStore } from "@/store/themeStore";
 import styles from "./BaseBackground.module.css";
 

@@ -6,5 +6,5 @@
   height: 100%;
   overflow: hidden;
   z-index: var(--z-index-middle);
-  opacity: 0.8;
+  opacity: 1;
 }
