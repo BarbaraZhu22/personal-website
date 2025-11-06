@@ -1,40 +1,33 @@
-'use client'
+"use client";
 
-import { useLanguageStore } from '@/store'
-import { t } from '@/lib/i18n'
-import styles from './Footer.module.css'
+import { useLanguageStore } from "@/store";
+import { t } from "@/lib/i18n";
+import styles from "./Footer.module.css";
+import Link from "next/link";
 
-const currentYear = new Date().getFullYear()
+const currentYear = new Date().getFullYear();
 
 export default function Footer() {
-  const { language } = useLanguageStore()
+  const { language } = useLanguageStore();
 
   return (
     <footer className={styles.footer}>
       <div className={`container ${styles.container}`}>
         <div className={styles.content}>
           <p className={styles.copyright}>
-            © {currentYear} {t('yourName', language) || 'Frontend Developer'}. {t('rightsReserved', language) || 'All rights reserved.'}
+            © {currentYear} {t("myName", language) || "Frontend Developer"}.{" "}
+            {t("rightsReserved", language) || "All rights reserved."}
           </p>
           <div className={styles.links}>
-            <a 
-              href="https://github.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className={`${styles.link} hover-color transition-colors`}
-            >
-              GitHub
-            </a>
-            <a 
+            <Link
               href="/contact"
               className={`${styles.link} hover-color transition-colors`}
             >
-              {t('contact', language) || 'Contact'}
-            </a>
+              📫
+            </Link>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }
-
