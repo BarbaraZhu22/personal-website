@@ -1,0 +1,12 @@
+.baseBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0.5;
+  z-index: var(--z-index-bottom);
+  /* Ensure smooth transitions */
+  transition: opacity 0.5s ease-in-out, background-image 0.5s ease-in-out;
+}

@@ -1,7 +1,8 @@
 import "../styles/globals.css";
-import { Header, Footer, MainBackground } from "@/layouts";
+import { Header, Footer, MainBackground, BaseBackground } from "@/layouts";
 import ThemeProvider from "@/components/ThemeProvider";
 import ParticleBackground from "@/components/ParticleBackground";
+import styles from "./layout.module.css";
 
 export default function RootLayout({
   children,
@@ -14,8 +15,9 @@ export default function RootLayout({
         <ThemeProvider>
           <Header />
           <main className="main-content">
+            <BaseBackground />
             <MainBackground />
-            {children}
+            <div className={styles.contentWrapper}>{children}</div>
           </main>
           {/* Background particles with autoRotate */}
           <Footer />

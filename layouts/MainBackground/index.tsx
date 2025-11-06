@@ -132,10 +132,7 @@ export default function MainBackground() {
 
     // Scale up to compensate for rotation (cos(45°) = √2/2 ≈ 0.707)
     // We need to scale by 1/cos(45°) ≈ 1.414 to maintain full screen coverage
-    const rotationAngle = Math.PI / 12;
-    plane.rotateY(rotationAngle);
-    const scaleFactor = 1.0 / Math.cos(rotationAngle); // Approximately 1.414
-    plane.scale.set(scaleFactor, scaleFactor, 1);
+    plane.scale.set(1, 1, 1);
     plane.position.set(0, 0, 0);
 
     player.scene.add(plane);

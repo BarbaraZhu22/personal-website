@@ -1,0 +1,7 @@
+.contentWrapper {
+  position: relative;
+  z-index: var(--z-index-top);
+  width: 100%;
+  height: 100%;
+}
+

@@ -9,10 +9,13 @@ export default function Profile() {
   const { t, language } = useTranslation();
   const { colors, isDark } = useTheme();
   const greetingText = t("welcomeGreeting");
-  const { text: displayedGreeting, isComplete } = useTypingEffect(greetingText, {
-    speed: language === "zh" ? 80 : 100,
-    delay: 300,
-  });
+  const { text: displayedGreeting, isComplete } = useTypingEffect(
+    greetingText,
+    {
+      speed: language === "zh" ? 80 : 100,
+      delay: 300,
+    }
+  );
 
   // Placeholder gradient background - replace with actual image path when ready
   const placeholderStyle = {
@@ -49,39 +52,119 @@ export default function Profile() {
                     stopOpacity="0.3"
                   />
                 </linearGradient>
-                
+
                 {/* Cat body gradient */}
-                <linearGradient id="catBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="var(--color-foreground)" stopOpacity="1" />
-                  <stop offset="50%" stopColor="var(--color-secondary)" stopOpacity="0.6" />
-                  <stop offset="100%" stopColor="var(--color-foreground)" stopOpacity="0.9" />
+                <linearGradient
+                  id="catBodyGrad"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    stopColor="var(--color-foreground)"
+                    stopOpacity="1"
+                  />
+                  <stop
+                    offset="50%"
+                    stopColor="var(--color-secondary)"
+                    stopOpacity="0.6"
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor="var(--color-foreground)"
+                    stopOpacity="0.9"
+                  />
                 </linearGradient>
-                
+
                 {/* Cat head gradient */}
-                <linearGradient id="catHeadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="var(--color-foreground)" stopOpacity="1" />
-                  <stop offset="50%" stopColor="var(--color-primary)" stopOpacity="0.4" />
-                  <stop offset="100%" stopColor="var(--color-foreground)" stopOpacity="0.95" />
+                <linearGradient
+                  id="catHeadGrad"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    stopColor="var(--color-foreground)"
+                    stopOpacity="1"
+                  />
+                  <stop
+                    offset="50%"
+                    stopColor="var(--color-primary)"
+                    stopOpacity="0.4"
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor="var(--color-foreground)"
+                    stopOpacity="0.95"
+                  />
                 </linearGradient>
-                
+
                 {/* Ear gradient */}
-                <linearGradient id="catEarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="var(--color-foreground)" stopOpacity="1" />
-                  <stop offset="100%" stopColor="var(--color-secondary)" stopOpacity="0.7" />
+                <linearGradient
+                  id="catEarGrad"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    stopColor="var(--color-foreground)"
+                    stopOpacity="1"
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor="var(--color-secondary)"
+                    stopOpacity="0.7"
+                  />
                 </linearGradient>
-                
+
                 {/* Tail gradient */}
-                <linearGradient id="catTailGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="var(--color-foreground)" stopOpacity="1" />
-                  <stop offset="50%" stopColor="var(--color-primary)" stopOpacity="0.5" />
-                  <stop offset="100%" stopColor="var(--color-foreground)" stopOpacity="0.9" />
+                <linearGradient
+                  id="catTailGrad"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    stopColor="var(--color-foreground)"
+                    stopOpacity="1"
+                  />
+                  <stop
+                    offset="50%"
+                    stopColor="var(--color-primary)"
+                    stopOpacity="0.5"
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor="var(--color-foreground)"
+                    stopOpacity="0.9"
+                  />
                 </linearGradient>
-                
+
                 {/* Eye shine gradient */}
                 <radialGradient id="eyeShineGrad" cx="50%" cy="30%">
-                  <stop offset="0%" stopColor="var(--color-foreground)" stopOpacity="1" />
-                  <stop offset="50%" stopColor="var(--color-secondary)" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0.6" />
+                  <stop
+                    offset="0%"
+                    stopColor="var(--color-foreground)"
+                    stopOpacity="1"
+                  />
+                  <stop
+                    offset="50%"
+                    stopColor="var(--color-secondary)"
+                    stopOpacity="0.8"
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor="var(--color-primary)"
+                    stopOpacity="0.6"
+                  />
                 </radialGradient>
               </defs>
               {/* Background circle */}
@@ -163,8 +246,22 @@ export default function Profile() {
                 opacity="0.9"
               />
               {/* Eye highlights */}
-              <ellipse cx="86" cy="74" rx="1.5" ry="1.5" fill="white" opacity="0.8" />
-              <ellipse cx="116" cy="74" rx="1.5" ry="1.5" fill="white" opacity="0.8" />
+              <ellipse
+                cx="86"
+                cy="74"
+                rx="1.5"
+                ry="1.5"
+                fill="white"
+                opacity="0.8"
+              />
+              <ellipse
+                cx="116"
+                cy="74"
+                rx="1.5"
+                ry="1.5"
+                fill="white"
+                opacity="0.8"
+              />
 
               {/* Nose */}
               <path
@@ -233,11 +330,6 @@ export default function Profile() {
           className={`${styles.greeting} typing-effect ${
             isComplete ? "typing-complete" : ""
           } ${language === "zh" ? styles.chinese : ""}`}
-          style={{
-            textShadow: isDark
-              ? `0 2px 20px ${colors.primary} 40`
-              : `0 2px 10px ${colors.primary} 20`,
-          }}
         >
           {displayedGreeting}
         </h1>
