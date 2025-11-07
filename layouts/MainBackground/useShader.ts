@@ -321,8 +321,7 @@ export const starFragmentShader = `
     vec3 coreColor = uStarColor * totalCore;
     
     // Lighten halo color by mixing with white and reduce opacity for more natural look
-    vec3 lightenedHaloColor = mix(uStarColor, uHaloColor, 0.3); // Mix 70% white, 30% theme color
-    vec3 haloColor = lightenedHaloColor * totalHalo * 0.06; // Very subtle opacity
+    vec3 haloColor = uHaloColor; // Very subtle opacity
     
     // Combine colors
     vec3 color = coreColor + haloColor;

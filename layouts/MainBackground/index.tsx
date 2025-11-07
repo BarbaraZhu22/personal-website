@@ -133,6 +133,80 @@ export default function MainBackground() {
   const timeRef = useRef<number>(0); // Animation time reference
   const { isDark, colors } = useTheme();
   const isDarkRef = useRef<boolean>(isDark);
+  const headerElementRef = useRef<HTMLElement | null>(null);
+
+  const isEventWithinHeader = (event: MouseEvent): boolean => {
+    const headerElement = headerElementRef.current;
+    if (!headerElement) return false;
+
+    const path =
+      typeof event.composedPath === "function"
+        ? event.composedPath()
+        : undefined;
+
+    if (Array.isArray(path) && path.includes(headerElement)) {
+      return true;
+    }
+
+    const target = event.target as Node | null;
+    return !!target && headerElement.contains(target);
+  };
+
+  // Helper function to resume natural spinning
+  const resumeSpinning = () => {
+    isMouseControllingRef.current = false;
+    timeRef.current = currentRotationAngleRef.current / ROTATION_SPEED;
+  };
+
+  const stopResumeSpinning = () => {
+    if (mouseMoveTimeoutRef.current) {
+      clearTimeout(mouseMoveTimeoutRef.current);
+    }
+  };
+
+  // Handle mouse movement for rotation control
+  const handleMouseMove = (event: MouseEvent) => {
+    if (!isDarkRef.current || isEventWithinHeader(event)) return;
+
+    const deltaX = event.clientX - lastMouseXRef.current;
+    currentRotationAngleRef.current += deltaX * MOUSE_SENSITIVITY;
+    currentRotationAngleRef.current = normalizeAngle(
+      currentRotationAngleRef.current
+    );
+
+    isMouseControllingRef.current = true;
+    lastMouseXRef.current = event.clientX;
+
+    stopResumeSpinning();
+
+    mouseMoveTimeoutRef.current = setTimeout(() => {
+      resumeSpinning();
+    }, MOUSE_STOP_TIMEOUT);
+  };
+
+  // Handle mousedown - pause natural spinning
+  const handleMouseDown = (event: MouseEvent) => {
+    if (!isDarkRef.current || isEventWithinHeader(event)) return; // Only in dark mode
+
+    stopResumeSpinning();
+
+    isMouseControllingRef.current = true;
+    lastMouseXRef.current = event.clientX;
+  };
+
+  // Handle mouseup - resume natural spinning
+  const handleMouseUp = (event: MouseEvent) => {
+    if (!isDarkRef.current) return; // Only in dark mode
+
+    resumeSpinning();
+  };
+
+  // Initialize lastMouseXRef on first mouse move
+  const handleMouseMoveInit = (event: MouseEvent) => {
+    lastMouseXRef.current = event.clientX;
+    window.removeEventListener("mousemove", handleMouseMoveInit);
+    window.addEventListener("mousemove", handleMouseMove);
+  };
 
   // Keep isDarkRef in sync with isDark
   useEffect(() => {
@@ -141,6 +215,10 @@ export default function MainBackground() {
 
   useEffect(() => {
     if (!containerRef.current) return;
+
+    headerElementRef.current = document.querySelector(
+      '[data-header="true"]'
+    ) as HTMLElement | null;
 
     const container = containerRef.current;
     const canvas = document.createElement("canvas");
@@ -226,10 +304,6 @@ export default function MainBackground() {
     const plane = new THREE.Mesh(planeGeometry, shaderMaterial);
 
     // Position plane as background (facing camera)
-    // Rotate degrees around Y axis for 3D effect
-
-    // Scale up to compensate for rotation (cos(45°) = √2/2 ≈ 0.707)
-    // We need to scale by 1/cos(45°) ≈ 1.414 to maintain full screen coverage
     plane.scale.set(1, 1, 1);
     plane.position.set(0, 0, 0);
 
@@ -279,60 +353,6 @@ export default function MainBackground() {
 
     animate();
 
-    // Helper function to resume natural spinning
-    const resumeSpinning = () => {
-      isMouseControllingRef.current = false;
-      timeRef.current = currentRotationAngleRef.current / ROTATION_SPEED;
-    };
-
-    // Handle mouse movement for rotation control
-    const handleMouseMove = (event: MouseEvent) => {
-      if (!isDarkRef.current) return;
-
-      const deltaX = event.clientX - lastMouseXRef.current;
-      currentRotationAngleRef.current += deltaX * MOUSE_SENSITIVITY;
-      currentRotationAngleRef.current = normalizeAngle(
-        currentRotationAngleRef.current
-      );
-
-      isMouseControllingRef.current = true;
-      lastMouseXRef.current = event.clientX;
-
-      if (mouseMoveTimeoutRef.current) {
-        clearTimeout(mouseMoveTimeoutRef.current);
-      }
-
-      mouseMoveTimeoutRef.current = setTimeout(() => {
-        resumeSpinning();
-      }, MOUSE_STOP_TIMEOUT);
-    };
-
-    // Handle mousedown - pause natural spinning
-    const handleMouseDown = (event: MouseEvent) => {
-      if (!isDarkRef.current) return; // Only in dark mode
-
-      if (mouseMoveTimeoutRef.current) {
-        clearTimeout(mouseMoveTimeoutRef.current);
-      }
-
-      isMouseControllingRef.current = true;
-      lastMouseXRef.current = event.clientX;
-    };
-
-    // Handle mouseup - resume natural spinning
-    const handleMouseUp = (event: MouseEvent) => {
-      if (!isDarkRef.current) return; // Only in dark mode
-
-      resumeSpinning();
-    };
-
-    // Initialize lastMouseXRef on first mouse move
-    const handleMouseMoveInit = (event: MouseEvent) => {
-      lastMouseXRef.current = event.clientX;
-      window.removeEventListener("mousemove", handleMouseMoveInit);
-      window.addEventListener("mousemove", handleMouseMove);
-    };
-
     window.addEventListener("mousemove", handleMouseMoveInit);
     window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mouseup", handleMouseUp);
@@ -374,12 +394,15 @@ export default function MainBackground() {
       window.removeEventListener("mousemove", handleMouseMoveInit);
       window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mouseup", handleMouseUp);
-      if (mouseMoveTimeoutRef.current) {
-        clearTimeout(mouseMoveTimeoutRef.current);
-      }
+
+      stopResumeSpinning();
+
+      headerElementRef.current = null;
+
       if (animationFrameRef.current !== null) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+
       player.stopRender();
       player.dispose();
       if (container.contains(canvas)) {
@@ -393,6 +416,7 @@ export default function MainBackground() {
     if (!materialRef.current) return;
 
     const material = materialRef.current;
+    const plane = planeRef.current;
     const isDarkMode = isDark;
     const themeColor = hexToVector3(colors.primary).multiplyScalar(0.8);
 
@@ -401,6 +425,14 @@ export default function MainBackground() {
     const currentResolution =
       material.uniforms.uResolution?.value ||
       new THREE.Vector2(window.innerWidth, window.innerHeight);
+
+    // Recover plane z
+    if (!isDarkMode && plane) {
+      stopResumeSpinning();
+      const rotationZ = 0;
+      currentRotationAngleRef.current = rotationZ;
+      plane.rotation.z = 0;
+    }
 
     // Update fragment shader
     material.fragmentShader = isDarkMode

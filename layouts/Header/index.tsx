@@ -19,7 +19,7 @@ export default function Header() {
   return (
     <>
       <TopBar />
-      <header className={styles.header}>
+      <header className={styles.header} data-header="true">
         <div className={`container ${styles.container}`}>
           <nav className={styles.nav}>
             {navItems.map((item) => {
