@@ -23,7 +23,7 @@ export default function Footer() {
               href="/contact"
               className={`${styles.link} hover-color transition-colors`}
             >
-              📫
+              {t("contact", language)}
             </Link>
           </div>
         </div>

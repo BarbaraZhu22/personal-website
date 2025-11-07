@@ -40,9 +40,13 @@
   gap: 1rem;
 }
 
-.copyright {
+.copyright,
+.link {
   font-size: clamp(0.75rem, 1.2vw + 0.4rem, 0.875rem);
   color: var(--color-text-muted);
+}
+
+.copyright {
   margin: 0;
 }
 
@@ -53,8 +57,6 @@
 }
 
 .link {
-  font-size: clamp(1rem, 1.2vw + 0.8rem, 1.5rem);
-  color: var(--color-text-muted);
   text-decoration: none;
   transition: color 0.3s ease;
 }
