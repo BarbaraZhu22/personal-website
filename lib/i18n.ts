@@ -57,7 +57,7 @@ const translations: Translations = {
   },
   work: {
     en: "Work",
-    zh: "作品",
+    zh: "项目",
     es: "Trabajo",
     fr: "Travail",
   },
@@ -120,6 +120,42 @@ const translations: Translations = {
     zh: "TypeScript",
     es: "TypeScript",
     fr: "TypeScript",
+  },
+  duplicate: {
+    en: "Duplicate",
+    zh: "复制",
+    es: "Duplicar",
+    fr: "Dupliquer",
+  },
+  duplicated: {
+    en: "Duplicated",
+    zh: "已复制",
+    es: "Duplicado",
+    fr: "Dupliqué",
+  },
+  extendDetail: {
+    en: "Show more detail",
+    zh: "展开更多细节",
+    es: "Mostrar más detalles",
+    fr: "Afficher plus de détails",
+  },
+  collapseDetail: {
+    en: "Collapse detail",
+    zh: "收起细节",
+    es: "Ocultar detalles",
+    fr: "Réduire les détails",
+  },
+  viewProject: {
+    en: "View project",
+    zh: "查看项目",
+    es: "Ver proyecto",
+    fr: "Voir le projet",
+  },
+  watchVideo: {
+    en: "Watch video",
+    zh: "观看视频",
+    es: "Ver video",
+    fr: "Regarder la vidéo",
   },
 };
 

@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import { Button, Card } from "@/components";
-import { contactContent } from "@/content";
+import { getContactContent } from "@/content";
+import { useTranslation } from "@/hooks";
 import styles from "./page.module.css";
 
 export default function Contact() {
   const [duplicatedMethodIds, setDuplicatedMethodIds] = useState<string[]>([]);
+  const { t, language } = useTranslation();
+  const contactContent = getContactContent(language);
 
   const handleDuplicateValue = async (value: string, id: string) => {
     try {
@@ -33,6 +36,8 @@ export default function Contact() {
 
       <div className={styles.content}>
         {contactContent.methods.map((method) => {
+          const isDuplicated = duplicatedMethodIds.includes(method.id);
+
           return (
             <Card
               key={method.id}
@@ -51,12 +56,10 @@ export default function Contact() {
                     type="button"
                     className={`${styles.duplicateButton} hover-lift transition-all`}
                     onClick={() => handleDuplicateValue(method.value, method.id)}
-                    aria-label={`Duplicate ${method.title} contact value`}
-                    disabled={duplicatedMethodIds.includes(method.id)}
+                    aria-label={`${t("duplicate")} ${method.title}`}
+                    disabled={isDuplicated}
                   >
-                    {duplicatedMethodIds.includes(method.id)
-                      ? "Duplicated"
-                      : "Duplicate"}
+                    {isDuplicated ? t("duplicated") : t("duplicate")}
                   </Button>
                 </div>
                 {method.details?.length ? (
@@ -80,3 +83,4 @@ export default function Contact() {
     </div>
   );
 }
+
