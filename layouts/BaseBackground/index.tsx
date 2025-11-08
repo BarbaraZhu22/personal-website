@@ -27,49 +27,101 @@ export default function BaseBackground({
   const colorScheme = useThemeStore((state) => state.colorScheme);
 
   // Random selection will happen in useEffect on client side only
-  const [currentBgImage, setCurrentBgImage] = useState<string>(
-    backgroundImages[0]
-  );
+  const [currentBgImage, setCurrentBgImage] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [isDeferred, setIsDeferred] = useState(false);
 
-  const selectRandomImage = () => {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const w = window as Window & typeof globalThis;
+
+    const schedule = (callback: IdleRequestCallback): number => {
+      if (typeof w.requestIdleCallback === "function") {
+        return w.requestIdleCallback(callback);
+      }
+
+      const start = Date.now();
+
+      return window.setTimeout(() => {
+        callback({
+          didTimeout: false,
+          timeRemaining: () =>
+            Math.max(0, 50 - (Date.now() - start)),
+        });
+      }, 200);
+    };
+
+    const cancel = (handle: number) => {
+      if (typeof w.cancelIdleCallback === "function") {
+        w.cancelIdleCallback(handle);
+      } else {
+        window.clearTimeout(handle);
+      }
+    };
+
+    const handle = schedule(() => setIsDeferred(true));
+
+    return () => {
+      cancel(handle);
+    };
+  }, []);
+
+  const selectRandomImage = React.useCallback(() => {
     const randomIndex = Math.floor(Math.random() * backgroundImages.length);
-    setCurrentBgImage(backgroundImages[randomIndex]);
     setCurrentIndex(randomIndex);
-  };
+    setCurrentBgImage(backgroundImages[randomIndex]);
+  }, []);
+
+  const selectImageAtIndex = React.useCallback((index: number) => {
+    const normalizedIndex =
+      ((index % backgroundImages.length) + backgroundImages.length) %
+      backgroundImages.length;
+    setCurrentIndex(normalizedIndex);
+    setCurrentBgImage(backgroundImages[normalizedIndex]);
+  }, []);
+
+  const selectNextSequentialImage = React.useCallback(() => {
+    setCurrentIndex((prevIndex) => {
+      const nextIndex = (prevIndex + 1) % backgroundImages.length;
+      setCurrentBgImage(backgroundImages[nextIndex]);
+      return nextIndex;
+    });
+  }, []);
 
   // Change background randomly when theme color changes
   useEffect(() => {
+    if (!isDeferred) return;
+
     if (random) {
       selectRandomImage();
+    } else {
+      selectImageAtIndex(currentIndex);
     }
-  }, [colorScheme, random]);
+  }, [colorScheme, random, isDeferred, selectRandomImage, selectImageAtIndex, currentIndex]);
 
   // Auto-cycle through images if interval is set
   useEffect(() => {
-    if (cycleInterval <= 0) return;
+    if (!isDeferred || cycleInterval <= 0) return;
 
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
       if (random) {
-        // Random selection
-        const randomIndex = Math.floor(Math.random() * backgroundImages.length);
-        setCurrentBgImage(backgroundImages[randomIndex]);
+        selectRandomImage();
       } else {
-        // Sequential cycling
-        const nextIndex = (currentIndex + 1) % backgroundImages.length;
-        setCurrentIndex(nextIndex);
-        setCurrentBgImage(backgroundImages[nextIndex]);
+        selectNextSequentialImage();
       }
     }, cycleInterval);
 
-    return () => clearInterval(interval);
-  }, [cycleInterval, random, currentIndex]);
+    return () => window.clearInterval(interval);
+  }, [cycleInterval, random, isDeferred, selectRandomImage, selectNextSequentialImage]);
 
   return (
     <div
       className={styles.baseBg}
       style={{
-        backgroundImage: `url(${currentBgImage})`,
+        ...(currentBgImage
+          ? { backgroundImage: `url(${currentBgImage})` }
+          : {}),
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
