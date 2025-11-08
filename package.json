@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "git lfs install && git lfs pull",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
