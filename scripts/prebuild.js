@@ -44,9 +44,28 @@ try {
       run(`git remote add origin ${repoUrl}`);
       remote = repoUrl;
     } else {
-      console.log(
-        '[prebuild] Git remote "origin" not found and VERCEL_GIT_REPOSITORY_URL is missing. Falling back to default git-lfs pull.'
-      );
+      const provider = (process.env.VERCEL_GIT_PROVIDER || '').toLowerCase();
+      const owner = process.env.VERCEL_GIT_REPO_OWNER;
+      const slug = process.env.VERCEL_GIT_REPO_SLUG;
+
+      const providerHosts = {
+        github: 'https://github.com',
+        gitlab: 'https://gitlab.com',
+        bitbucket: 'https://bitbucket.org',
+      };
+
+      if (provider && owner && slug && providerHosts[provider]) {
+        const derivedUrl = `${providerHosts[provider]}/${owner}/${slug}.git`;
+        console.log(
+          `[prebuild] Adding git remote "origin" from derived ${derivedUrl}`
+        );
+        run(`git remote add origin ${derivedUrl}`);
+        remote = derivedUrl;
+      } else {
+        console.log(
+          '[prebuild] Git remote "origin" not found and repository URL could not be derived. Falling back to default git-lfs pull.'
+        );
+      }
     }
   }
 
