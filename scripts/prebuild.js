@@ -29,6 +29,7 @@ try {
 
 try {
   run('git lfs install');
+
   let remote = '';
   try {
     remote = execSync('git remote get-url origin', {
@@ -36,9 +37,17 @@ try {
       encoding: 'utf8',
     }).trim();
   } catch {
-    console.log(
-      '[prebuild] Git remote "origin" not found. Falling back to default git-lfs pull.'
-    );
+    const repoUrl =
+      process.env.VERCEL_GIT_REPOSITORY_URL || process.env.VERCEL_GIT_REPO_URL;
+    if (repoUrl) {
+      console.log(`[prebuild] Adding git remote "origin" from ${repoUrl}`);
+      run(`git remote add origin ${repoUrl}`);
+      remote = repoUrl;
+    } else {
+      console.log(
+        '[prebuild] Git remote "origin" not found and VERCEL_GIT_REPOSITORY_URL is missing. Falling back to default git-lfs pull.'
+      );
+    }
   }
 
   if (remote) {
