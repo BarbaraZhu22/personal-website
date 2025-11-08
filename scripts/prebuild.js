@@ -27,27 +27,25 @@ try {
   exit('[prebuild] Not inside a Git repository – skipping Git LFS commands.');
 }
 
-const hasOriginRemote = (() => {
+try {
+  run('git lfs install');
+  let remote = '';
   try {
-    const remote = execSync('git remote get-url origin', {
+    remote = execSync('git remote get-url origin', {
       stdio: ['ignore', 'pipe', 'ignore'],
       encoding: 'utf8',
     }).trim();
-    return Boolean(remote);
   } catch {
-    return false;
+    console.log(
+      '[prebuild] Git remote "origin" not found. Falling back to default git-lfs pull.'
+    );
   }
-})();
 
-if (!hasOriginRemote) {
-  exit(
-    '[prebuild] No git remote "origin" detected. Ensure VERCEL_GIT_LFS=1 is enabled so Vercel clones the repository using Git.'
-  );
-}
-
-try {
-  run('git lfs install');
-  run('git lfs pull origin');
+  if (remote) {
+    run('git lfs pull origin');
+  } else {
+    run('git lfs pull');
+  }
 } catch (error) {
   console.error('[prebuild] Git LFS commands failed:', error.message);
   process.exit(1);
