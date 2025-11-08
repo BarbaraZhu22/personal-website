@@ -1,31 +1,28 @@
-'use client'
+"use client";
 
-import { Card } from '@/components'
-import { contactContent } from '@/content'
-import { useState } from 'react'
-import styles from './page.module.css'
+import { useState } from "react";
+import { Button, Card } from "@/components";
+import { contactContent } from "@/content";
+import styles from "./page.module.css";
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
-  })
-  const [submitted, setSubmitted] = useState(false)
+  const [duplicatedMethodIds, setDuplicatedMethodIds] = useState<string[]>([]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle form submission here
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 3000)
-  }
+  const handleDuplicateValue = async (value: string, id: string) => {
+    try {
+      const sanitizedValue = value.replace(/\s+/g, "");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
-  }
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(sanitizedValue);
+      }
+
+      setDuplicatedMethodIds((current) =>
+        current.includes(id) ? current : [...current, id]
+      );
+    } catch (error) {
+      console.error("Failed to duplicate contact value", error);
+    }
+  };
 
   return (
     <div className={`container ${styles.container} page-enter`}>
@@ -35,93 +32,51 @@ export default function Contact() {
       </div>
 
       <div className={styles.content}>
-        <Card className={`${styles.contactCard} hover-lift transition-all`}>
-          <div className={styles.contactInfo}>
-            <h2 className={styles.sectionTitle}>Contact Information</h2>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Email:</span>
-              <a 
-                href={`mailto:${contactContent.email}`}
-                className={`${styles.infoValue} hover-color transition-colors`}
-              >
-                {contactContent.email}
-              </a>
-            </div>
-            <div className={styles.social}>
-              <h3 className={styles.socialTitle}>Connect with me:</h3>
-              <div className={styles.socialLinks}>
-                {contactContent.social.map((social) => (
-                  <a
-                    key={social.name}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`${styles.socialLink} hover-scale transition-transform`}
-                    title={social.name}
-                  >
-                    {social.name}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        <Card className={`${styles.formCard} hover-lift transition-all`}>
-          <h2 className={styles.sectionTitle}>Send a Message</h2>
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <div className={styles.formGroup}>
-              <label htmlFor="name" className={styles.label}>
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className={`${styles.input} focus-ring transition-all`}
-                required
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label htmlFor="email" className={styles.label}>
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={`${styles.input} focus-ring transition-all`}
-                required
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label htmlFor="message" className={styles.label}>
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                rows={6}
-                className={`${styles.textarea} focus-ring transition-all`}
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className={`${styles.submitButton} btn-interactive transition-all`}
+        {contactContent.methods.map((method) => {
+          return (
+            <Card
+              key={method.id}
+              className={`${styles.contactCard} hover-lift transition-all`}
             >
-              {submitted ? 'Message Sent!' : 'Send Message'}
-            </button>
-          </form>
-        </Card>
+              <div className={styles.contactInfo}>
+                <h2 className={styles.sectionTitle}>{method.title}</h2>
+                <p className={styles.description}>{method.description}</p>
+                <div className={styles.valueRow}>
+                  <p
+                    className={`${styles.primaryLink} hover-color transition-colors`}
+                  >
+                    {method.value}
+                  </p>
+                  <Button
+                    type="button"
+                    className={`${styles.duplicateButton} hover-lift transition-all`}
+                    onClick={() => handleDuplicateValue(method.value, method.id)}
+                    aria-label={`Duplicate ${method.title} contact value`}
+                    disabled={duplicatedMethodIds.includes(method.id)}
+                  >
+                    {duplicatedMethodIds.includes(method.id)
+                      ? "Duplicated"
+                      : "Duplicate"}
+                  </Button>
+                </div>
+                {method.details?.length ? (
+                  <ul className={styles.detailsList}>
+                    {method.details.map((detail) => (
+                      <li key={detail} className={styles.detailsItem}>
+                        {detail}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            </Card>
+          );
+        })}
       </div>
-    </div>
-  )
-}
 
+      {contactContent.note ? (
+        <p className={styles.note}>{contactContent.note}</p>
+      ) : null}
+    </div>
+  );
+}
